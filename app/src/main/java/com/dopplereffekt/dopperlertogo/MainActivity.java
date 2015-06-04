@@ -19,15 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ShareActionProvider;
 import android.widget.Toast;
-
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,7 +97,7 @@ public class MainActivity extends Activity {
                 //überprüfung ob der Tag mit dem Letzten gespeicherten Tag übereinander stimmt.
                 if (neuerTag()) {
                     //ist es ein neuer Tag, wird sofort eine PDF runtergeladen.
-                    download();
+     //             download();
                     //Toast sind kurzlebige "popups" die gebraucht werden können um den Benutzer über irgendwelche zustandsänderungen oder
                     //Erfolge bzw Misserfolge des Prozesses zu informieren.
                     Toast.makeText(this, "Neues File wurde heruntergeladen", Toast.LENGTH_SHORT).show();
@@ -123,11 +115,11 @@ public class MainActivity extends Activity {
                 }
             } else {
                 Toast.makeText(this, "File wurde nicht auf dem Gerät gefunden. Download wurde gestartet", Toast.LENGTH_SHORT).show();
-                download();
+    //            download();
             }
         }else{
             Log.d("PDF", "pdf existierte noch nicht.");
-            download();
+     //       download();
         }
     }
 
@@ -334,8 +326,12 @@ public class MainActivity extends Activity {
         }
         // Handle action bar actions click
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.action_settings: {
                 return true;
+            }
+            case R.id.action_example:{
+                Log.d("Example", "der button werude gedrückt.");
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -363,7 +359,7 @@ public class MainActivity extends Activity {
                 fragment = new WarningFragment();
                 break;
             case 1:
-                fragment = new publicLighterFragment();
+                fragment = new showLighterListFragment();
                 break;
             case 2:
                 fragment = new InformationOtherFragment();

@@ -15,32 +15,39 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Entweder mit aktuellen"
+                android:id="@+id/textView2"
+                android:layout_marginLeft="10dp" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Meine Position"
+                android:text="Position"
                 android:id="@+id/button"
                 android:layout_margin="20dp" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Weltkarte sehen"
-                android:id="@+id/button2"
-                android:layout_margin="20dp" />
         </LinearLayout>
 
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="oder lange auf Karte drücken."
+            android:id="@+id/textView"
+            android:layout_gravity="center_horizontal" />
 
         <com.google.android.gms.maps.MapView android:id="@+id/map"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 
 
-
-
-
-
     </LinearLayout>
+
 </RelativeLayout>

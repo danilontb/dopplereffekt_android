@@ -36,6 +36,15 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
         View rootView = inflater.inflate(R.layout.informoterhs_fragment, container, false);
 
         mMapView = (MapView) rootView.findViewById(R.id.map);
+
+        // Perform any camera updates here
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+
+
         mMapView.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mMapView.onResume();// needed to get the map to display immediately
@@ -62,6 +71,10 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
         googleMap.setBuildingsEnabled(true);
         // Show Zoom buttons
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+
+        // Sets the map type to be "hybrid"
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
         // latitude and longitude
         double latitude = 47.411448;
         double longitude = 9.068251;
@@ -86,15 +99,11 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
         CameraPosition cameraPositionLeykosPyrgos = new CameraPosition.Builder() .target(new LatLng(40.626401, 22.948352)).zoom(2).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPositionLeykosPyrgos));
 */
-
         googleMap.setOnMapLongClickListener(this);
         googleMap.setOnMapClickListener(this);
 
-        // Perform any camera updates here
-        return rootView;
+        super.onActivityCreated(savedInstanceState);
     }
-
-
 
     @Override
     public void onMapClick(LatLng point) {

@@ -22,6 +22,13 @@
         <item>@drawable/warnen</item>
     </array>
 
+    <string-array name="dropdown_choice">
+        <item>Wählen Sie</item>
+        <item>Karte</item>
+        <item>Liste</item>
+    </string-array>
+
+
     <string name="publicLighterText">Das Dokument wird wöchentlich aktualisiert. Letzte Aktualisierung am :</string>
     <string name="checkBoxText">Ich möchte gerne darüber informiert werden, falls sich ein Blitzer in meiner unmittelbaren Umgebung sich befindet. </string>
 
@@ -29,6 +36,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_example">Example action</string>
+    <string name="action_map">Karte</string>
+    <string name="action_list">Liste</string>
 
     <string name="action_settings">Settings</string>
     <!-- Content Description -->
