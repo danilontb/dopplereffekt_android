@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">ProDoppler</string>
+
+
+    <string-array name="nav_drawer_items">
+        <item>Mich warnen</item>
+        <item>öffentliche Blitzer</item>
+        <item>Informiere andere</item>
+        <item>Sonstige Ereignisse</item>
+        <item>Deine Meinung zählt</item>
+        <item>About us</item>
+    </string-array>
+
+    <!-- Nav Drawer List Item Icons -->
+    <!-- Keep them in order as the titles are in -->
+    <array name="nav_drawer_icons">
+        <item>@drawable/informiereandere</item>
+        <item>@drawable/informiereandere</item>
+        <item>@drawable/oeffentliche</item>
+        <item>@drawable/warnen</item>
+        <item>@drawable/erignisse</item>
+        <item>@drawable/warnen</item>
+    </array>
+
+    <string name="publicLighterText">Das Dokument wird wöchentlich aktualisiert. Letzte Aktualisierung am :</string>
+    <string name="checkBoxText">Ich möchte gerne darüber informiert werden, falls sich ein Blitzer in meiner unmittelbaren Umgebung sich befindet. </string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Example action</string>
+
+    <string name="action_settings">Settings</string>
+    <!-- Content Description -->
+    <string name="desc_list_item_icon">Item Icon</string>
+
+    <string name="turn_your_gps_on_text">GPS ist ausgeschaltet. Um präzise Meldungen über Blitzer zu erhalten, muss das GPS eingeschaltet sein.</string>
+    <string name="gps_is_turning_off">Sie erhalten keine weiteren Liveupdates</string>
+</resources>
