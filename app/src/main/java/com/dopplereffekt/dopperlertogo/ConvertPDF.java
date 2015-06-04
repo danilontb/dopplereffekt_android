@@ -1,7 +1,13 @@
 package com.dopplereffekt.dopperlertogo;
 
-import android.os.Environment;
 
+import android.content.Context;
+import android.location.Geocoder;
+import android.location.Location;
+import android.os.Environment;
+import android.util.Log;
+
+import com.google.android.gms.identity.intents.Address;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
@@ -9,6 +15,8 @@ import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by dsantagata
@@ -24,7 +32,7 @@ import java.io.StringWriter;
 
 public class ConvertPDF {
 
-
+Context context ;
 
     public static String pdf2string() throws IOException {
 
@@ -177,4 +185,6 @@ public class ConvertPDF {
             return false;
         }
     }
-}
+
+
+ }

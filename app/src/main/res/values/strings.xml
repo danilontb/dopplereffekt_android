@@ -3,9 +3,9 @@
 
 
     <string-array name="nav_drawer_items">
-        <item>Mich warnen</item>
-        <item>öffentliche Blitzer</item>
-        <item>Informiere andere</item>
+        <item>Warnung</item>
+        <item>gemeldete Blitzer</item>
+        <item>Blitzer markieren</item>
         <item>Sonstige Ereignisse</item>
         <item>Deine Meinung zählt</item>
         <item>About us</item>
