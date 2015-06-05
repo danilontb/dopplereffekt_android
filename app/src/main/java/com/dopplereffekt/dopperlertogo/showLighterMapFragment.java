@@ -27,6 +27,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.http.HttpResponse;
@@ -41,13 +42,15 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
 
 /**
  * Created by dsantagata on 31.05.2015.
  */
 public class showLighterMapFragment extends Fragment {
 
-    private ProgressDialog pDialog;
+
+
     GoogleMap googleMap;
     MapView mMapView;
 
@@ -65,6 +68,8 @@ public class showLighterMapFragment extends Fragment {
     new  LoadingLighterPosition().execute();
 
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -175,15 +180,16 @@ public class showLighterMapFragment extends Fragment {
     /*
     * Background Async Task to Create new product
     * */
-    class LoadingLighterPosition extends AsyncTask<String, String, String> {
+    class LoadingLighterPosition extends AsyncTask<String, MarkerOptions, String> {
 
+        ProgressDialog pDialog;
         /**
          * Before starting background thread Show Progress Dialog
          * */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(getActivity());
+             pDialog = new ProgressDialog(getActivity());
             pDialog.setMessage("Aktuelle Standorte werden geladen...");
             pDialog.setTitle("Datenbank download");
             pDialog.setIndeterminate(false);
@@ -191,19 +197,12 @@ public class showLighterMapFragment extends Fragment {
             pDialog.show();
         }
 
+
         /**
          * Read positions
          * */
         protected String doInBackground(String... args)
         {
-
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
             int i = 0;
             for (String adress : ConvertPDF.pdf2AdressStringForAPI()) {
 
@@ -217,13 +216,28 @@ public class showLighterMapFragment extends Fragment {
                     MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng(loca.getLatitude(), loca.getLongitude())).title(ConvertPDF.pdf2AdressArray()[i]);
                     // Changing marker icon
                     thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    googleMap.addMarker(thessaloniki);
-
+           //         googleMap.addMarker(thessaloniki);
+                    publishProgress(thessaloniki);
                 } else {
                     //Toast.makeText(getActivity(), "Koordinaten sind leer", Toast.LENGTH_SHORT).show();
                 }
                 i++;
             }
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(MarkerOptions... values) {
+           googleMap.addMarker(values[0]);
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+
+
             // dismiss the dialog once done
             pDialog.dismiss();
 
