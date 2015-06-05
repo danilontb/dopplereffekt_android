@@ -16,9 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,22 +24,9 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 
 /**
  * Created by dsantagata on 31.05.2015.
@@ -53,8 +37,8 @@ public class showLighterMapFragment extends Fragment {
 
     GoogleMap googleMap;
     MapView mMapView;
+    int anzArrayInhalt = ConvertPDF.pdf2AdressArray().length;
 
-    double[] coordinate = new double[ConvertPDF.getNumberOfLighter() * 2];
     Location loca = null;
 
 
@@ -67,8 +51,9 @@ public class showLighterMapFragment extends Fragment {
 
     new  LoadingLighterPosition().execute();
 
-    }
 
+
+    }
 
 
     @Override
@@ -132,6 +117,8 @@ public class showLighterMapFragment extends Fragment {
 
                 lc.setLatitude(lat);
                 lc.setLongitude(lng);
+                
+
                 //  lc.setLatitude(location.getLatitude());
 
                 Log.d("loca", lng + " ");
@@ -229,7 +216,7 @@ public class showLighterMapFragment extends Fragment {
 
         @Override
         protected void onProgressUpdate(MarkerOptions... values) {
-           googleMap.addMarker(values[0]);
+            googleMap.addMarker(values[0]);
         }
 
         /**
