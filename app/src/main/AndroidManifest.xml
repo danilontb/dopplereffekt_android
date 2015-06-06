@@ -30,6 +30,7 @@
         </activity>
         <activity android:name=".Dialogs"></activity>
         <activity android:name=".NotifyMessage"></activity>
+        <activity android:name=".WriteEvent2DB"></activity>
         <service android:name=".GPSService"></service>
 
 

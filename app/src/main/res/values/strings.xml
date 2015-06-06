@@ -23,6 +23,7 @@
     </array>
 
     <string-array name="event_possibility">
+        <item>Wählen Sie ein Erreignis</item>
         <item>Fester Blitzer</item>
         <item>Mobiler Blitzer</item>
         <item>Laser am Strassenrand</item>

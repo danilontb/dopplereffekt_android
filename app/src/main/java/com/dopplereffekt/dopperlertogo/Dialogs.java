@@ -6,6 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by dsantagata
@@ -13,6 +20,10 @@ import android.util.Log;
 public class Dialogs extends Activity {
 
     String d = "babeliba";
+
+    public static String eventoption        = null;
+    public static String eventcomment       = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +41,7 @@ public class Dialogs extends Activity {
             case 3:{
                 createNewEvent();
             }break;
-            case :{
+            case 4:{
                 turnGpsOn();
             }break;
             default:{
@@ -122,24 +133,46 @@ public class Dialogs extends Activity {
     }
 
     private void createNewEvent() {
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle(R.string.titletext_event);
         builder.setIcon(R.drawable.newevent);
         builder.setView(R.layout.publishevent_layout);
 
+        final Spinner dropdownmenu = (Spinner)findViewById(R.id.dropdownEvents);
+
+        final TextView tv_eventcomment = (TextView)findViewById(R.id.eventsComment);
+
+        dropdownmenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                eventoption = String.valueOf(dropdownmenu.getSelectedItem());
+                Toast.makeText(getApplicationContext(), eventoption, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         builder.setCancelable(false)
                 .setPositiveButton(R.string.buttontext_commit, new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+         /*               eventcomment  = tv_eventcomment.getText().toString();
+                        Intent intent = new Intent(getApplicationContext(), WriteEvent2DB.class);
+                        intent.putExtra("event", eventoption);
+                        intent.putExtra("comment", eventcomment);
+
+                        startActivity(intent);
+           */
+
                         dialog.cancel();
-                        getResponseActivity(true);
+
                     }
                 })
                 .setNegativeButton(R.string.buttontext_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
-                        getResponseActivity(false);
+
                     }
                 });
         final AlertDialog alert = builder.create();

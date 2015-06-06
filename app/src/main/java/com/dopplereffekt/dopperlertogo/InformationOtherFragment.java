@@ -127,56 +127,6 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
         inflater.inflate(R.menu.global, menu);
     }
 
-
-    /**
-     * Background Async Task to Create new product
-     * */
-    class LoadingMap extends AsyncTask<String, MarkerOptions, String> {
-
-        ProgressDialog pDialog;
-        /**
-         * Before starting background thread Show Progress Dialog
-         * */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(getActivity());
-            pDialog.setMessage("Aktuelle Standorte werden geladen...");
-            pDialog.setTitle("Datenbank download");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
-        }
-
-
-        /**
-         * Read positions
-         * */
-        protected String doInBackground(String... args)
-        {
-
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(MarkerOptions... values) {
-            googleMap.addMarker(values[0]);
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
-
-
-            // dismiss the dialog once done
-            pDialog.dismiss();
-
-        }
-
-    }
-
 }
 
 

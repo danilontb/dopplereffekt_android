@@ -38,7 +38,7 @@ public class WarningFragment extends Fragment {
     boolean wantsUpdates;
     boolean isGPSEnabled;
     LocationManager service;
-    boolean serviceLaeuft;
+    public static boolean serviceLaeuft;
 
     private static final int ENABLE_GPS = 999;                      //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
     public static Intent serviceIntent = null;                             //Der service intent, wo immer der gleiche aufgerufen bzw gestoppt wird.

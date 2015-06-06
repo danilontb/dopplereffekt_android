@@ -47,9 +47,10 @@ public class MainActivity extends Activity {
     public static final String PREFS_NAME = "MyPrefsFile";              //so heisst das File, dass jegliche Daten der App enthält.
     public static boolean wantRecieveUpdates = false;               //Bit wird gesetzt, wenn der Customer updates wünscht.
 
-    private static final int CLOSE_APP = 1000;                      //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
+    private static final int CLOSE_APP  = 1000;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
+    private static final int SET_EVENT  = 1001;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
 
-
+   // public static boolean serviceLauft = false;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -210,16 +211,19 @@ public class MainActivity extends Activity {
                 service = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
                 if(service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     Intent intent = new Intent(this, Dialogs.class);
-                    intent.putExtra("Dialogs", 3);
+                    intent.putExtra("Dialog", 3);
                     startActivity(intent);
                 }else{
                     Intent intent = new Intent(this, Dialogs.class);
-                    intent.putExtra("Dialog", 1);
+                    intent.putExtra("Dialog", 4);
                     startActivity(intent);
                 }
             }break;
         }
     }
+
+
+
 
     /**
      * Slide menu item click listener
@@ -316,14 +320,18 @@ public class MainActivity extends Activity {
             switch (requestCode) {
                 case CLOSE_APP: {
                     if (data.getExtras().getBoolean("ResponseActivity")) {
-                       // if (serviceLauft) {
+                        if (WarningFragment.serviceLaeuft) {
                             wantRecieveUpdates = false;
                             writeUpdateState(wantRecieveUpdates);
-                         //   stopService(serviceIntent);
-                         //   serviceLauft = false;
-                        //}
+                            stopService(WarningFragment.serviceIntent);
+                            WarningFragment.serviceLaeuft = false;
+                        }
                         finish();
                     }
+                }
+                break;
+                case SET_EVENT:{
+
                 }
                 break;
             }

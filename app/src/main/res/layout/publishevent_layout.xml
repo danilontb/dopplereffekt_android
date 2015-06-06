@@ -7,14 +7,14 @@
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/spinner"
+        android:id="@+id/dropdownEvents"
         android:entries="@array/event_possibility"
         android:spinnerMode="dropdown"
         android:layout_marginTop="20dp"
         android:gravity="center_vertical|center_horizontal" />
 
     <EditText
-        android:id="@+id/etComment"
+        android:id="@+id/eventsComment"
         android:inputType="textEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
