@@ -3,10 +3,12 @@ package com.dopplereffekt.dopperlertogo;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -83,7 +85,7 @@ public class MainActivity extends Activity {
         //Wir speichern den aktuellen Tag rein damit das PDF nur 1x am tag heruntergeladen wird.
         //Sobald die Klasse ShowLighterList aufgerufen wird. wird der Letzte gespeicherte Tag aus er Datenbank geholt und in "alterTag" gespeichert.
         //Auch der wunsch über Updates wird gespeichert solange wie die Activity lebt.
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         oldDay = settings.getInt("Tag", 0);
         wantRecieveUpdates = settings.getBoolean("Updates", false);
         oldFiledate = settings.getString("oldFiledate", " ");
@@ -197,6 +199,26 @@ public class MainActivity extends Activity {
         mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
 
 
+    }
+
+    public void onButtonClick(View view){
+        switch (view.getId()){
+            case R.id.btn_position:{
+                Log.d("buttonausfragment", "button position gedrückt. ");
+                LocationManager service;
+                //Der LocationManager wird benötigt, um abzufragen, ob der User das GPS eingeschaltet hat.
+                service = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                if(service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    Intent intent = new Intent(this, Dialogs.class);
+                    intent.putExtra("Dialogs", 3);
+                    startActivity(intent);
+                }else{
+                    Intent intent = new Intent(this, Dialogs.class);
+                    intent.putExtra("Dialog", 1);
+                    startActivity(intent);
+                }
+            }break;
+        }
     }
 
     /**

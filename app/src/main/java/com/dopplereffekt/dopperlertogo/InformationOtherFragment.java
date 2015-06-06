@@ -2,9 +2,14 @@ package com.dopplereffekt.dopperlertogo;
 
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -29,6 +34,9 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
 
     MapView mMapView;
 
+    // latitude and longitude
+    double zuich_latitude       = 47.379022;
+    double zurich_longitude     =  8.541001;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -75,23 +83,10 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
         // Sets the map type to be "hybrid"
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-        // latitude and longitude
-        double latitude = 47.411448;
-        double longitude = 9.068251;
 
-        // create marker
-        MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng(latitude, longitude)).title("Thessaloniki");
-        //----------------
-        MarkerOptions LeykosPyrgos = new MarkerOptions().position(new LatLng(40.626401, 22.948352)).title("Leykos Pyrgos");
 
-        // Changing marker icon
-        thessaloniki.icon(BitmapDescriptorFactory .defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        //----------------
-        LeykosPyrgos.icon(BitmapDescriptorFactory .fromResource(R.drawable.mapmarker));
 
-        // adding marker
-        googleMap.addMarker(thessaloniki);
-        CameraPosition cameraPositionThess = new CameraPosition.Builder() .target(new LatLng(47.411448, 9.068251)).zoom(12).build();
+        CameraPosition cameraPositionThess = new CameraPosition.Builder() .target(new LatLng(zuich_latitude, zurich_longitude)).zoom(8).build();
         googleMap.animateCamera(CameraUpdateFactory .newCameraPosition(cameraPositionThess));
         //----------------
         /*
@@ -113,13 +108,74 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
 
     @Override
     public void onMapLongClick(LatLng point) {
-        googleMap.addMarker(new MarkerOptions()
+      /*  googleMap.addMarker(new MarkerOptions()
                 .position(point)
                 .title("You are here")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+    */
+        Intent intent = new Intent(getActivity(), Dialogs.class);
+        intent.putExtra("Dialog", 3);
+        getActivity().startActivity(intent);
     }
 
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.global, menu);
+    }
+
+
+    /**
+     * Background Async Task to Create new product
+     * */
+    class LoadingMap extends AsyncTask<String, MarkerOptions, String> {
+
+        ProgressDialog pDialog;
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setMessage("Aktuelle Standorte werden geladen...");
+            pDialog.setTitle("Datenbank download");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+
+        /**
+         * Read positions
+         * */
+        protected String doInBackground(String... args)
+        {
+
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(MarkerOptions... values) {
+            googleMap.addMarker(values[0]);
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+
+
+            // dismiss the dialog once done
+            pDialog.dismiss();
+
+        }
+
+    }
 
 }
 

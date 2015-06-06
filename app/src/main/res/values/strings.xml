@@ -22,10 +22,12 @@
         <item>@drawable/warnen</item>
     </array>
 
-    <string-array name="dropdown_choice">
-        <item>Wählen Sie</item>
-        <item>Karte</item>
-        <item>Liste</item>
+    <string-array name="event_possibility">
+        <item>Fester Blitzer</item>
+        <item>Mobiler Blitzer</item>
+        <item>Laser am Strassenrand</item>
+        <item>Verkehrskontrolle</item>
+        <item>Sonstiges Ereigniss</item>
     </string-array>
 
 
@@ -38,6 +40,11 @@
     <string name="action_example">Example action</string>
     <string name="action_map">Karte</string>
     <string name="action_list">Liste</string>
+
+    <string name="titletext_event">Was möchtest du melden?</string>
+    <string name="buttontext_cancel">Abbrechen</string>
+    <string name="buttontext_commit">Übermitteln</string>
+    <string name="buttontext_position">Position</string>
 
     <string name="action_settings">Settings</string>
     <!-- Content Description -->

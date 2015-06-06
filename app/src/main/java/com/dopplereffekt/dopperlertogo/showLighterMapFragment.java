@@ -4,11 +4,14 @@ package com.dopplereffekt.dopperlertogo;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +29,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -33,28 +39,76 @@ import java.util.List;
  */
 public class showLighterMapFragment extends Fragment {
 
-
+    String datefile = "DateFile";
 
     GoogleMap googleMap;
     MapView mMapView;
-    int anzArrayInhalt = ConvertPDF.pdf2AdressArray().length;
 
-    Location loca = null;
+    int anzOffizielleBlitzer = ConvertPDF.pdf2AdressArray().length;
+    String [] adressen = null;
+    Location[] orte = new Location[anzOffizielleBlitzer];
 
+    Location loca   = null;
+    int minutes     = 100;
+    int oldminutes  = 100;
+    int hour        = 100;
+    int oldhour     = 100;
+    int day         = 100;
+    int oldday      = 100;
 
-    // double[] coordinate = {47.398797, 9.610752,47.435966, 9.071049, 47.291788, 9.125980, 47.248224, 9.344076};
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(adressen==null){
+            adressen = ConvertPDF.pdf2AdressStringForAPI();
+            Log.d("adressenarray", "adressenarry war leer");
+        }else{
+            Log.d("adressenarray", "adressenarry war nicht leer");
+        }
 
 
+        loadPrefrences();
+        loadActualTime();
 
-    new  LoadingLighterPosition().execute();
+        for(int i = 0; i<anzOffizielleBlitzer; i++){
+            orte[i] = convertAddressToCoor(adressen[i]);
+        }
+
+        for(Location loca : orte){
+            Log.d("versuch" ,loca.getLatitude() + " " + loca.getLongitude());
+        }
+
+
+        if((minutes < (oldminutes+15))&&(hour == oldhour)&&(day == oldday)&&(orte!=null)){
+            //lade nichts neues runter
+        }else {
+            //lade daten neu
+            oldminutes  = minutes;
+            oldday      = day;
+            oldhour     = hour;
+
+        }
 
 
 
     }
 
+    private void loadPrefrences(){
+        SharedPreferences settings = this.getActivity().getSharedPreferences(datefile, Context.MODE_PRIVATE);
+        oldday      = settings.getInt("day", 0);
+        oldhour     = settings.getInt("hour", 0);
+        oldminutes  = settings.getInt("minutes", 0);
+
+
+    }
+
+    private void loadActualTime(){
+        Calendar calendar = GregorianCalendar.getInstance();
+        minutes = calendar.get(Calendar.MINUTE);
+        hour    = calendar.get(Calendar.HOUR_OF_DAY);
+        day     = calendar.get(Calendar.DAY_OF_YEAR);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -63,6 +117,7 @@ public class showLighterMapFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.showlightermap_fragment, container, false);
 
+        Log.d("adressenarray" ,"fettig");
         mMapView = (MapView) rootView.findViewById(R.id.lightershowmap);
         mMapView.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -117,7 +172,7 @@ public class showLighterMapFragment extends Fragment {
 
                 lc.setLatitude(lat);
                 lc.setLongitude(lng);
-                
+
 
                 //  lc.setLatitude(location.getLatitude());
 
@@ -133,6 +188,13 @@ public class showLighterMapFragment extends Fragment {
 
         return lc;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        new  LoadingLighterPosition().execute();
+    }
+
 
 
     @Override
@@ -164,7 +226,7 @@ public class showLighterMapFragment extends Fragment {
         return true;
     }
 
-    /*
+    /**
     * Background Async Task to Create new product
     * */
     class LoadingLighterPosition extends AsyncTask<String, MarkerOptions, String> {

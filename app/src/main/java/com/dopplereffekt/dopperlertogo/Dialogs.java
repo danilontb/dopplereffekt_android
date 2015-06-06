@@ -22,13 +22,16 @@ public class Dialogs extends Activity {
         //Switch case so muss dem Intent nur ein Wert "Dialog" mitgegeben werden und die Klasse Dialogs handelt den richtigen Dialog.
         switch(extras.getInt("Dialog")){
             case 1:{
-                turnGpsOnDialog();
+                turnGpsOnDialogForWarning();
             }break;
             case 2:{
                 dialogBeforDestroy();
             }break;
             case 3:{
-
+                createNewEvent();
+            }break;
+            case :{
+                turnGpsOn();
             }break;
             default:{
 
@@ -68,7 +71,7 @@ public class Dialogs extends Activity {
         alertDialog.show();
     }
 
-    private void turnGpsOnDialog() {
+    private void turnGpsOnDialogForWarning() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Standortfreigabe erforderlich");
@@ -92,6 +95,57 @@ public class Dialogs extends Activity {
         final AlertDialog alert = builder.create();
         alert.show();
     }
+
+    private void turnGpsOn() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Standortfreigabe erforderlich");
+        builder.setIcon(R.drawable.gps_icon);
+
+        builder.setMessage("Um mit deiner Position ein Erreignis zu markieren, muss das GPS eingeschaltet sein.")
+                .setCancelable(false)
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        dialog.cancel();
+                        getResponseActivity(true);
+                    }
+                })
+                .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                        getResponseActivity(false);
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void createNewEvent() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.titletext_event);
+        builder.setIcon(R.drawable.newevent);
+        builder.setView(R.layout.publishevent_layout);
+
+        builder.setCancelable(false)
+                .setPositiveButton(R.string.buttontext_commit, new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        dialog.cancel();
+                        getResponseActivity(true);
+                    }
+                })
+                .setNegativeButton(R.string.buttontext_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                        getResponseActivity(false);
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 
 
     //getResponseActivity liefert zurück zur activity von wo sie gestartet wurde und gibt zudem eine Antwort.
