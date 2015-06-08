@@ -11,9 +11,9 @@ public class WriteEvent2DB extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        super.onCreate(savedInstanceState);
         final Bundle extras = getIntent().getExtras();
 
-        Log.d("write2db", "etwas ist angekommen" + extras.getString("event") + " " + extras.getString("comment"));
+        Log.d("write2db", "etwas ist angekommen" + extras.getString("eventoption") + " " + extras.getString("eventcomment"));
     }
 }

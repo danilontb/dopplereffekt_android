@@ -4,6 +4,7 @@ package com.dopplereffekt.dopperlertogo;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -113,7 +114,10 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
                 .title("You are here")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
     */
+
         Intent intent = new Intent(getActivity(), Dialogs.class);
+        intent.putExtra("mylongitude",point.longitude);
+        intent.putExtra("mylatitude", point.latitude);
         intent.putExtra("Dialog", 3);
         getActivity().startActivity(intent);
     }

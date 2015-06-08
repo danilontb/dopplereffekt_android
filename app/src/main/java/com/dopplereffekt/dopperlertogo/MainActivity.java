@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +37,9 @@ TODO GPS adressen checken ist erledigt. Als nächstes wäre checken, warum immer e
  */
 
 public class MainActivity extends Activity  {
+
+    public static LocationManager locationmanager       = null;
+    public static Location         mylocation           = null;
 
     public static String foldername = "dopplereffekt";
     public static String pdfname = "publicLighter";
@@ -203,14 +208,20 @@ public class MainActivity extends Activity  {
     }
 
     public void onButtonClick(View view){
+
         switch (view.getId()){
             case R.id.btn_position:{
+
                 Log.d("buttonausfragment", "button position gedrückt. ");
                 LocationManager service;
                 //Der LocationManager wird benötigt, um abzufragen, ob der User das GPS eingeschaltet hat.
                 service = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
                 if(service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    mylocation = locationmanager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     Intent intent = new Intent(this, Dialogs.class);
+                    intent.putExtra("mylongitude", mylocation.getLongitude());
+                    intent.putExtra("mylatitude", mylocation.getLatitude());
                     intent.putExtra("Dialog", 3);
                     startActivity(intent);
                 }else{
