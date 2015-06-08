@@ -4,22 +4,48 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <ImageView
+            android:src="@drawable/warnen"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:background="#FFFFBB33"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/titletext_event"
+            android:background="#FFFFBB33"
+            android:textColor="#000000"
+            android:id="@+id/textView"
+            android:textSize="18dp"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/dropdownEvents"
+        android:id="@+id/spinner"
         android:entries="@array/event_possibility"
-        android:spinnerMode="dropdown"
-        android:layout_marginTop="20dp"
-        android:gravity="center_vertical|center_horizontal" />
+        android:layout_marginTop="20dp" />
 
     <EditText
-        android:id="@+id/eventsComment"
-        android:inputType="textEmailAddress"
+        android:id="@+id/tv_eventcomment"
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="   Hinweis zum Blitzer z.B. Beim roten Haus    " />
-
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif"
+        android:hint=" Beschreibung : z.B grauer Volvo"/>
 
 </LinearLayout>

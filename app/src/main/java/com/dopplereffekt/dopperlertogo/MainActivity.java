@@ -34,7 +34,7 @@ import java.util.GregorianCalendar;
 TODO GPS adressen checken ist erledigt. Als nächstes wäre checken, warum immer eine neues FIle heruntergeladen wird.
  */
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity  {
 
     public static String foldername = "dopplereffekt";
     public static String pdfname = "publicLighter";

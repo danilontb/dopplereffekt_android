@@ -2,16 +2,20 @@ package com.dopplereffekt.dopperlertogo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
+import android.app.Dialog;
 import org.w3c.dom.Text;
 
 /**
@@ -24,9 +28,12 @@ public class Dialogs extends Activity {
     public static String eventoption        = null;
     public static String eventcomment       = null;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 
         final Bundle extras = getIntent().getExtras();
 
@@ -132,52 +139,73 @@ public class Dialogs extends Activity {
         alert.show();
     }
 
+
+
     private void createNewEvent() {
 
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle(R.string.titletext_event);
-        builder.setIcon(R.drawable.newevent);
-        builder.setView(R.layout.publishevent_layout);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.publishevent_layout, null);
 
-        final Spinner dropdownmenu = (Spinner)findViewById(R.id.dropdownEvents);
+        final TextView tv_comment = (TextView)v.findViewById(R.id.tv_eventcomment);
+        Spinner spinner = (Spinner)v.findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.event_possibility, android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
-        final TextView tv_eventcomment = (TextView)findViewById(R.id.eventsComment);
-
-        dropdownmenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                eventoption = String.valueOf(dropdownmenu.getSelectedItem());
-                Toast.makeText(getApplicationContext(), eventoption, Toast.LENGTH_SHORT).show();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+             //   Log.d("funkioniere", parent.getItemAtPosition(position) + " ");
+                eventoption = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        builder.setView(v);
+
+
+
+        builder.setPositiveButton("Markieren", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                eventcomment = tv_comment.getText().toString();
+                Log.d("funktionieren", eventcomment);
+                Log.d("funktionieren", eventoption);
+             /*   if((eventoption!=null)&&(!(eventoption.equals("Was möchtest du melden?"))&&(eventcomment!=null))){
+                    Intent intent = new Intent(getApplicationContext(), WriteEvent2DB.class);
+                    intent.putExtra("eventoption", eventoption);
+                    intent.putExtra("eventcomment", eventcomment);
+                    startActivity(intent);
+                }
+*/
+                finish();
             }
         });
 
 
-        builder.setCancelable(false)
-                .setPositiveButton(R.string.buttontext_commit, new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-         /*               eventcomment  = tv_eventcomment.getText().toString();
-                        Intent intent = new Intent(getApplicationContext(), WriteEvent2DB.class);
-                        intent.putExtra("event", eventoption);
-                        intent.putExtra("comment", eventcomment);
+        builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
-                        startActivity(intent);
-           */
+                finish();
+            }
+        });
 
-                        dialog.cancel();
 
-                    }
-                })
-                .setNegativeButton(R.string.buttontext_cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        dialog.cancel();
+        builder.show();
 
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
     }
+
+
+
+
 
 
 
