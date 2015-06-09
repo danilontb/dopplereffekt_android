@@ -42,8 +42,8 @@ public class Dialogs extends Activity {
 
         mylongitude = extras.getString("mylongitude");
         mylatitude  = extras.getString("mylatitude");
+        Log.d("showittome", mylongitude + " : " + mylatitude + " um das gehts bitches" );
 
-        Log.d("dialogtest", mylatitude + " , " + mylatitude);
 
 
         //Switch case so muss dem Intent nur ein Wert "Dialog" mitgegeben werden und die Klasse Dialogs handelt den richtigen Dialog.
@@ -203,7 +203,7 @@ public class Dialogs extends Activity {
                     intent.putExtra("eventlongitude", mylongitude);
                     intent.putExtra("eventlatitude", mylatitude);
 
-                    Log.d("abgeschickt", mylatitude + " : " + mylongitude);
+                    Log.d("showittome", mylongitude + " : " + mylatitude + " um das gehts bitches" );
                     startActivity(intent);
 
                     Log.d("funktionieren", "alle optionen wruden erfüllt");

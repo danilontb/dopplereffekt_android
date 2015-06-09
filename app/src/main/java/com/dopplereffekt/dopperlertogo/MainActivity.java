@@ -220,8 +220,9 @@ public class MainActivity extends Activity  {
                     locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     mylocation = locationmanager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     Intent intent = new Intent(this, Dialogs.class);
-                    intent.putExtra("mylongitude", mylocation.getLongitude());
-                    intent.putExtra("mylatitude", mylocation.getLatitude());
+                    intent.putExtra("mylongitude", String.valueOf(mylocation.getLongitude()));
+                    intent.putExtra("mylatitude", String.valueOf(mylocation.getLatitude()));
+                    Log.d("showittome", mylocation.getLongitude() + " : " + mylocation.getLatitude() + " um das gehts bitches");
                     intent.putExtra("Dialog", 3);
                     startActivity(intent);
                 }else{

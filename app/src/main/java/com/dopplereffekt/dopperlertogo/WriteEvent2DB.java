@@ -45,7 +45,7 @@ public class WriteEvent2DB extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.lighterwhilewriting);
+
         final Bundle extras = getIntent().getExtras();
 
         Log.d("website", "extras erhalten");
@@ -60,6 +60,8 @@ public class WriteEvent2DB extends Activity {
         eventlongitude = extras.getString("eventlongitude");
         eventlatitude = extras.getString("eventlatitude");
         eventcomment = extras.getString("eventcomment");
+
+        Log.d("showittome", eventlongitude + " : " + eventlatitude + " um das gehts bitches" );
 
         Log.d("website", "eventoption :" + eventoption);
         Log.d("website", "eventlng :" + eventlongitude);
@@ -91,14 +93,16 @@ public class WriteEvent2DB extends Activity {
 
 
 
-        if(eventlatitude==null && eventlongitude==null){
+        if((eventlatitude==null) && (eventlongitude==null)){
             Toast.makeText(this, "Dein GPS modul ist noch nicht bereit", Toast.LENGTH_SHORT).show();
+
         }else {
             new WriteNewEvent2DB().execute();
+            setContentView(R.layout.lighterwhilewriting);
         }
 
-
-       startActivity(new Intent(this, MainActivity.class));
+finish();finish();
+     // startActivity(new Intent(this, MainActivity.class));
     }
 
     /**
@@ -148,7 +152,6 @@ public class WriteEvent2DB extends Activity {
                 HttpResponse response = httpclient.execute(httppost);
 
                 // TODO Auto-generated catch block
-            } catch (ClientProtocolException e) {
             } catch (IOException e) {
             }
 
