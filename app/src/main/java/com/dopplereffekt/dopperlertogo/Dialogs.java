@@ -29,8 +29,8 @@ public class Dialogs extends Activity {
 
     public static String eventoption = null;
     public static String eventcomment = null;
-    public static double mylongitude;
-    public static double mylatitude;
+    public static String mylongitude = null;
+    public static String mylatitude = null;
 
 
     @Override
@@ -40,8 +40,11 @@ public class Dialogs extends Activity {
 
         final Bundle extras = getIntent().getExtras();
 
-        mylongitude = extras.getDouble("mylongitude");
-        mylatitude  = extras.getDouble("mylatitude");
+        mylongitude = extras.getString("mylongitude");
+        mylatitude  = extras.getString("mylatitude");
+
+        Log.d("dialogtest", mylatitude + " , " + mylatitude);
+
 
         //Switch case so muss dem Intent nur ein Wert "Dialog" mitgegeben werden und die Klasse Dialogs handelt den richtigen Dialog.
         switch (extras.getInt("Dialog")) {
@@ -197,6 +200,10 @@ public class Dialogs extends Activity {
                         intent.putExtra("eventcomment", eventcomment);
                     }
                     intent.putExtra("eventoption", eventoption);
+                    intent.putExtra("eventlongitude", mylongitude);
+                    intent.putExtra("eventlatitude", mylatitude);
+
+                    Log.d("abgeschickt", mylatitude + " : " + mylongitude);
                     startActivity(intent);
 
                     Log.d("funktionieren", "alle optionen wruden erfüllt");

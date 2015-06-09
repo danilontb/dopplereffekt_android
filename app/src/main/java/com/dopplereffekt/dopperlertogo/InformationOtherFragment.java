@@ -116,8 +116,9 @@ public class InformationOtherFragment extends Fragment implements GoogleMap.OnMa
     */
 
         Intent intent = new Intent(getActivity(), Dialogs.class);
-        intent.putExtra("mylongitude",point.longitude);
-        intent.putExtra("mylatitude", point.latitude);
+        intent.putExtra("mylongitude",point.longitude + " ");
+        intent.putExtra("mylatitude", point.latitude + " ");
+        Log.d("dialogtest", point.latitude + " , " + point.longitude);
         intent.putExtra("Dialog", 3);
         getActivity().startActivity(intent);
     }
