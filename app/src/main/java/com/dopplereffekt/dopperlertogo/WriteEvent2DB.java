@@ -19,7 +19,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -29,11 +32,15 @@ public class WriteEvent2DB extends Activity {
 
     private ProgressDialog pDialog;
 
-    String eventoption = null;
-    String eventlongitude = null;
-    String eventlatitude = null;
-    String eventcomment = null;
-    String website = "test";
+    String eventoption      = null;
+    String eventlongitude   = null;
+    String eventlatitude    = null;
+    String eventcomment     = null;
+    String eventminutes     = null;
+    String eventhour        = null;
+    String eventday         = null;
+    String eventmonth       = null;
+    String website          = "http://dopplereffekt.freehostingking.com/writetodatabase.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +50,11 @@ public class WriteEvent2DB extends Activity {
 
         Log.d("website", "extras erhalten");
 
+        Calendar calendar = GregorianCalendar.getInstance();
+        eventday = calendar.get(Calendar.DAY_OF_YEAR) + "";
+        eventminutes = calendar.get(Calendar.MINUTE)+ "";
+        eventmonth = calendar.get(Calendar.MONTH)+ "";
+        eventhour = calendar.get(Calendar.HOUR_OF_DAY)+ "";
 
         eventoption = extras.getString("eventoption");
         eventlongitude = extras.getString("eventlongitude");
@@ -57,22 +69,18 @@ public class WriteEvent2DB extends Activity {
         switch (extras.getString("eventoption")) {
             case "Fester Blitzer": {
                 eventoption = "fixlighter";
-                website = "http://dopplereffekt.freehostingking.com/setfixlighter.php";
             }
             break;
             case "Mobiler Blitzer": {
                 eventoption = "mobilelighter";
-                website = "http://dopplereffekt.freehostingking.com/setmobilelighter.php";
             }
             break;
             case "Laser am Strassenrand": {
                 eventoption = "laserlighter";
-                website = "http://dopplereffekt.freehostingking.com/setlaserlighter.php";
             }
             break;
             case "Verkehrskontrolle": {
                 eventoption = "controlposition";
-                website = "http://dopplereffekt.freehostingking.com/setcontrolposition.php";
             }
             break;
             default: {
@@ -81,12 +89,12 @@ public class WriteEvent2DB extends Activity {
             break;
         }
 
-        Log.d("website", website);
 
-        if (!website.equals("test")) {
-            new WriteNewEvent2DB().execute();
+
+        if(eventlatitude==null && eventlongitude==null){
+            Toast.makeText(this, "Dein GPS modul ist noch nicht bereit", Toast.LENGTH_SHORT).show();
         }else {
-            Toast.makeText(this,"Async wurde nicht gestartet", Toast.LENGTH_SHORT).show();
+            new WriteNewEvent2DB().execute();
         }
 
 
@@ -127,6 +135,13 @@ public class WriteEvent2DB extends Activity {
                 nameValuePairs.add(new BasicNameValuePair("longitude", eventlongitude));
                 nameValuePairs.add(new BasicNameValuePair("latitude", eventlatitude));
                 nameValuePairs.add(new BasicNameValuePair("comment", eventcomment));
+                nameValuePairs.add(new BasicNameValuePair("day", eventday));
+                nameValuePairs.add(new BasicNameValuePair("month", eventmonth));
+                nameValuePairs.add(new BasicNameValuePair("hour", eventhour));
+                nameValuePairs.add(new BasicNameValuePair("minutes", eventminutes));
+                nameValuePairs.add(new BasicNameValuePair("eventoption", eventoption));
+
+
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                 // Execute HTTP Post Request
