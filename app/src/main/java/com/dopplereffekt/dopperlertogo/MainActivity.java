@@ -33,13 +33,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /*
-TODO GPS adressen checken ist erledigt. Als nächstes wäre checken, warum immer eine neues FIle heruntergeladen wird.
+TODO GPS adressen checken ist erledigt. Alsächstes wäre checken, warum immer eine neues FIle heruntergeladen wird.
  */
 
-public class MainActivity extends Activity  {
+public class MainActivity extends Activity {
 
-    public static LocationManager locationmanager       = null;
-    public static Location         mylocation           = null;
+    public static LocationManager locationmanager = null;
+    public static Location mylocation = null;
 
     public static String foldername = "dopplereffekt";
     public static String pdfname = "publicLighter";
@@ -52,10 +52,10 @@ public class MainActivity extends Activity  {
     public static final String PREFS_NAME = "MyPrefsFile";              //so heisst das File, dass jegliche Daten der App enthält.
     public static boolean wantRecieveUpdates = false;               //Bit wird gesetzt, wenn der Customer updates wünscht.
 
-    private static final int CLOSE_APP  = 1000;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
-    private static final int SET_EVENT  = 1001;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
+    private static final int CLOSE_APP = 1000;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
+    private static final int SET_EVENT = 1001;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
 
-   // public static boolean serviceLauft = false;
+    // public static boolean serviceLauft = false;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -73,8 +73,8 @@ public class MainActivity extends Activity  {
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter adapter;
 
-
-
+    public static int mPosition;
+    public static boolean mNavigationItemClicked;
 
 
     @Override
@@ -82,22 +82,13 @@ public class MainActivity extends Activity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        //Als aller erster wird  der Drawer gezeichnet damit navigiert werden kann.
         createDrawer(savedInstanceState);
 
+        //initialisierung der Files damit alle wieder auf dem neusetn stand sind. Falls nötig werden noch dateien Heruntergeladen
+        //oder andere nötigen sachen gemacht.
+        initialization();
 
-
-        //Die Klasse SharedPefrences hilft kleine Datensätze in der Internen Datenbank zu Speichern.
-        //Wir speichern den aktuellen Tag rein damit das PDF nur 1x am tag heruntergeladen wird.
-        //Sobald die Klasse ShowLighterList aufgerufen wird. wird der Letzte gespeicherte Tag aus er Datenbank geholt und in "alterTag" gespeichert.
-        //Auch der wunsch über Updates wird gespeichert solange wie die Activity lebt.
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        oldDay = settings.getInt("Tag", 0);
-        wantRecieveUpdates = settings.getBoolean("Updates", false);
-        oldFiledate = settings.getString("oldFiledate", " ");
-        newFiledate = settings.getString("newFiledate", " ");
-
-        Log.d("SharedPreferences", wantRecieveUpdates + "");
         //überprüfung ob das PDF schon existiert oder ob ein neues heruntergeladen werden muss.
         if (ConvertPDF.pdfExists()) {
             Log.d("PDF", "pdf existiert");
@@ -105,7 +96,7 @@ public class MainActivity extends Activity  {
                 //überprüfung ob der Tag mit dem Letzten gespeicherten Tag übereinander stimmt.
                 if (neuerTag()) {
                     //ist es ein neuer Tag, wird sofort eine PDF runtergeladen.
-     //             download();
+                    download();
                     //Toast sind kurzlebige "popups" die gebraucht werden können um den Benutzer über irgendwelche zustandsänderungen oder
                     //Erfolge bzw Misserfolge des Prozesses zu informieren.
                     Toast.makeText(this, "Neues File wurde heruntergeladen", Toast.LENGTH_SHORT).show();
@@ -118,19 +109,30 @@ public class MainActivity extends Activity  {
                 } else {
                     //sollte das PDF heruntergeladen worden sein, jedoch der Inhalt noch nicht extrahiert werden konnte, wird die
                     //app geschlossen, und man muss sie manuel nochmals starten.
-                    Toast.makeText(this, "PDF konnte noch nicht gelesen werden.", Toast.LENGTH_SHORT).show();
-                    finish();
+                    Toast.makeText(this, "File sind alle auf dem neusten Stand", Toast.LENGTH_SHORT).show();
+
                 }
             } else {
-                Toast.makeText(this, "File wurde nicht auf dem Gerät gefunden. Download wurde gestartet", Toast.LENGTH_SHORT).show();
-    //            download();
+                Toast.makeText(this, "Files sind Inhaltslos. Reparatur in Arbeit.", Toast.LENGTH_SHORT).show();
+                download();
             }
-        }else{
+        } else {
             Log.d("PDF", "pdf existierte noch nicht.");
-     //       download();
+            download();
         }
     }
 
+    public void initialization() {
+        //Die Klasse SharedPefrences hilft kleine Datensätze in der Internen Datenbank zu Speichern.
+        //Wir speichern den aktuellen Tag rein damit das PDF nur 1x am tag heruntergeladen wird.
+        //Sobald die Klasse ShowLighterList aufgerufen wird. wird der Letzte gespeicherte Tag aus er Datenbank geholt und in "alterTag" gespeichert.
+        //Auch der wunsch über Updates wird gespeichert solange wie die Activity lebt.
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        oldDay = settings.getInt("Tag", 0);
+        wantRecieveUpdates = settings.getBoolean("Updates", false);
+        oldFiledate = settings.getString("oldFiledate", " ");
+        newFiledate = settings.getString("newFiledate", " ");
+    }
 
     private void createDrawer(Bundle savedInstanceState) {
 
@@ -184,12 +186,18 @@ public class MainActivity extends Activity  {
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(mTitle);
                 // calling onPrepareOptionsMenu() to show action bar icons
-                invalidateOptionsMenu();
+
+                if (mNavigationItemClicked) {
+                    displayView(mPosition);
+                }
+                mNavigationItemClicked = false;
+                //   invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(mDrawerTitle);
                 // calling onPrepareOptionsMenu() to hide action bar icons
+
                 invalidateOptionsMenu();
             }
         };
@@ -202,21 +210,18 @@ public class MainActivity extends Activity  {
         }
 
 
-        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
-
-
     }
 
-    public void onButtonClick(View view){
+    public void onButtonClick(View view) {
 
-        switch (view.getId()){
-            case R.id.btn_position:{
+        switch (view.getId()) {
+            case R.id.btn_position: {
 
                 Log.d("buttonausfragment", "button position gedrückt. ");
                 LocationManager service;
                 //Der LocationManager wird benötigt, um abzufragen, ob der User das GPS eingeschaltet hat.
-                service = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-                if(service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                service = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     mylocation = locationmanager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     Intent intent = new Intent(this, Dialogs.class);
@@ -225,16 +230,15 @@ public class MainActivity extends Activity  {
                     Log.d("showittome", mylocation.getLongitude() + " : " + mylocation.getLatitude() + " um das gehts bitches");
                     intent.putExtra("Dialog", 3);
                     startActivity(intent);
-                }else{
+                } else {
                     Intent intent = new Intent(this, Dialogs.class);
                     intent.putExtra("Dialog", 4);
                     startActivity(intent);
                 }
-            }break;
+            }
+            break;
         }
     }
-
-
 
 
     /**
@@ -245,7 +249,10 @@ public class MainActivity extends Activity  {
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
             // display view for selected nav drawer item
-            displayView(position);
+            mPosition = position;
+            mNavigationItemClicked = true;
+            mDrawerLayout.closeDrawer(mDrawerList);
+            //      displayView(position);
         }
     }
 
@@ -298,6 +305,18 @@ public class MainActivity extends Activity  {
         editor.commit();
     }
 
+    /**
+     * Mit dieser Methode wird der Tag gespeichert, dan dem man ein file heruntergeladen hat. Sollte das Smartphone die App abschiessen und neu
+     * starten, wird gecheckt, ob das File nochmals heruntergeladen werden muss.
+     */
+    public void writedownloadDay(int newday) {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("Tag", newday);
+        // Commit the edits!
+        editor.commit();
+    }
+
 
     /**
      * Diese Methode wird aufgerufen, wen sogenannte Key_Events passieren. Diese Spezifische Methode meldet
@@ -321,6 +340,7 @@ public class MainActivity extends Activity  {
     }
 
 
+
     /**
      * Diese Methode wird gestartet, wenn vorher ein startActivityForResult getätigt wurde.
      * Sobald die gestartet Activity "stribt" geht der Focus zurück und die Methode onActivityResult
@@ -342,7 +362,7 @@ public class MainActivity extends Activity  {
                     }
                 }
                 break;
-                case SET_EVENT:{
+                case SET_EVENT: {
 
                 }
                 break;
@@ -350,8 +370,6 @@ public class MainActivity extends Activity  {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
 
 
     @Override
@@ -371,7 +389,7 @@ public class MainActivity extends Activity  {
             case R.id.action_settings: {
                 return true;
             }
-            case R.id.action_example:{
+            case R.id.action_example: {
                 Log.d("Example", "der button werude gedrückt.");
             }
             default:
@@ -472,10 +490,11 @@ public class MainActivity extends Activity  {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
         Log.d("activity", "im onDestroy");
         writeUpdateState(false);
-
+        writedownloadDay(newDay);
+        super.onDestroy();
     }
 
     /**

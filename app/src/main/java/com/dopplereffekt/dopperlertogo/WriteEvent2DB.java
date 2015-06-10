@@ -101,7 +101,7 @@ public class WriteEvent2DB extends Activity {
             setContentView(R.layout.lighterwhilewriting);
         }
 
-finish();finish();
+finish();
      // startActivity(new Intent(this, MainActivity.class));
     }
 

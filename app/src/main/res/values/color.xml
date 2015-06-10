@@ -6,6 +6,11 @@
     <color name="list_background_pressed">#aeff00</color>
 
 
+    <color name="listbackground_public">#4cab7c</color>
+    <color name="listbachground_fixlighter">#4c89ee</color>
+    <color name="listbachground_mobilelighter">#e26c62</color>
+    <color name="listbachground_laserlighter">#ffc14c</color>
+    <color name="listbachground_controleposition">#4cab7c</color>
 
 
 </resources>

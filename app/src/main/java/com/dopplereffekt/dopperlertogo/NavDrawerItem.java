@@ -24,6 +24,7 @@ public class NavDrawerItem {
         this.count = count;
     }
 
+
     public String getTitle(){
         return this.title;
     }
