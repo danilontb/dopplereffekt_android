@@ -24,6 +24,13 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by dsantagata on 31.05.2015.
  */
@@ -101,8 +108,12 @@ public class WarningFragment extends Fragment {
             }
         });
 
+
+
         return rootView;
     }
+
+
 
     //mit dieser Methode wird gespeichert ob, der User informiert werden möchte oder nicht.
     public void writeUpdateState(boolean state) {

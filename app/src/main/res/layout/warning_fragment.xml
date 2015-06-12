@@ -13,4 +13,14 @@
         android:checked="false"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="test"
+        android:id="@+id/testbutton"
+        android:layout_below="@+id/checkBoxUpdates"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="79dp"
+        android:onClick="onButtonClick"/>
 </RelativeLayout>

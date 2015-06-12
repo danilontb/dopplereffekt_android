@@ -170,7 +170,7 @@ finish();
 
             // dismiss the dialog once done
             pDialog.dismiss();
-            finish();
+
         }
 
     }

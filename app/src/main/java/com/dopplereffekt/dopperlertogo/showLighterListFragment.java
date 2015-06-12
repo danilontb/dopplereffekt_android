@@ -1,14 +1,12 @@
 package com.dopplereffekt.dopperlertogo;
 
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,23 +19,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.identity.intents.Address;
-import com.itextpdf.text.ListBody;
-
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +34,7 @@ import java.util.Locale;
  */
 public class showLighterListFragment extends Fragment {
     // public WarningFragment(){}
+    private ProgressDialog pDialog1;
     private ProgressDialog pDialog;
     ListView publicLighterlist;
     ListView fixLighterList;
@@ -53,10 +42,10 @@ public class showLighterListFragment extends Fragment {
     ListView laserLigterList;
     ListView controlePostitionListView;
 
-    String[] fixLighterAdresse = new String[15];
-    String[] mobileLighterAdresse = null;
-    String[] laserLighterAdresse = null;
-    String[] controlePositionAdresse = null;
+   /* String[] fixLighterAdresse = MainActivity.fixLighterAdresse;
+    String[] mobileLighterAdresse = MainActivity.mobileLighterAdresse;
+    String[] laserLighterAdresse = MainActivity.laserLighterAdresse;
+    String[] controlePositionAdresse = MainActivity.controlePositionAdresse;*/
     String[] placeHolderArray = {"leer", "leer", "leer", "leer", "leer", "leer", "leer", "leer"};
 
     List<android.location.Address> addresses;
@@ -69,23 +58,12 @@ public class showLighterListFragment extends Fragment {
 
     String downloadwebsite = "http://dopplereffekt.freehostingking.com/readfromdatabase.php";
 
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    //    downloadEntitys();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.showlighterlist_fragment, container, false);
 
         setHasOptionsMenu(true);
-
-        new downloadEntityFormDatabase().execute();
-
-
 
         publicLighterlist = (ListView) rootView.findViewById(R.id.publiclighterlist);
         fixLighterList = (ListView) rootView.findViewById(R.id.fixlighterlist);
@@ -96,13 +74,13 @@ public class showLighterListFragment extends Fragment {
         publicLighterlist.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray()));
         publicLighterlist.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
 
-        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray()));
+        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, MainActivity.fixLighterAdresse));
         fixLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_fixlighter));
 
-        mobileLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray()));
+        mobileLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, MainActivity.mobileLighterAdresse));
         mobileLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_mobilelighter));
 
-        laserLigterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray()));
+        laserLigterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, MainActivity.laserLighterAdresse));
         laserLigterList.setBackgroundColor(getResources().getColor(R.color.listbachground_laserlighter));
 
 
@@ -165,71 +143,12 @@ public class showLighterListFragment extends Fragment {
         return true;
     }
 
-    public void downloadEntitys() {
-
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Adressen werden gedownloaded");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(true);
-        pDialog.show();
-
-        double lng;
-        double lat;
-        String comment = null;
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        // getting JSON string from URL
-        JSONObject json = jParser.makeHttpRequest(downloadwebsite, "GET", params);
-        Log.d("download", json.toString());
-        try {
-            JSONArray jsonArray = json.getJSONArray("fixLighter");
-            Log.d("download", jsonArray.toString());
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject helpingObject = jsonArray.getJSONObject(i);
-                lat = new Double(helpingObject.getString("latitude"));
-                lng = new Double(helpingObject.getString("longitude"));
-                comment = helpingObject.getString("comment");
-                Log.d("objekte", lat + " , " + lng + " , " + comment);
-
-                try {
-
-                    Geocoder geo = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
-                    addresses = geo.getFromLocation(lat, lng, 1);
-                } catch (IOException e) {
-
-                }
 
 
-                if (addresses.get(0).getLocality() == null) {
-                    fixLighterAdresse[i] = addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;                          //  Log.d("objekte",  addresses.get(0).getSubLocality() + ", " + addresses.get(0).getPostalCode() + " , " + addresses.get(0).getThoroughfare() + ", usercomment: " +comment);
-                } else if (addresses.get(0).getSubLocality() == null) {
-                    fixLighterAdresse[i] = addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                    //  Log.d("objekte",  addresses.get(0).getLocality() + ", " + addresses.get(0).getPostalCode() + " , " + addresses.get(0).getThoroughfare() + ", usercomment: " +comment);
-                }
-            }
-        } catch (JSONException e) {
-            Log.d("download", "etwas ging gründlich in die Hosen");
-        }
-
-
-        // Check your log cat for JSON reponse
-
-
-        for (String adressenausdb : fixLighterAdresse) {
-            if (adressenausdb != null) {
-                Log.d("ausgabefix", adressenausdb);
-            }
-        }
-
-
-
-        pDialog.dismiss();
-
-
-
-    }
-
-
-
+    /**
+     *StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+     StrictMode.setThreadPolicy(policy);
+     */
 
     class downloadEntityFormDatabase extends AsyncTask<String, String, String> {
 
@@ -248,13 +167,18 @@ public class showLighterListFragment extends Fragment {
 
         protected String doInBackground(String... args) {
             // Building Parameters
-            double lng;
+   /*         double lng;
             double lat;
             String comment = null;
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             // getting JSON string from URL
             JSONObject json = jParser.makeHttpRequest(downloadwebsite, "GET", params);
-            Log.d("download", json.toString());
+            if(json!=null) {
+                // Check your log cat for JSON reponse
+                Log.d("All Products: ", json.toString());
+            }else{
+                Log.d("download", "json ist leer");
+            }
             try {
                 JSONArray jsonArray = json.getJSONArray("fixLighter");
                 Log.d("download", jsonArray.toString());
@@ -294,7 +218,8 @@ public class showLighterListFragment extends Fragment {
                     Log.d("ausgabefix", adressenausdb);
                 }
             }
-            return null;
+
+    */        return null;
         }
 
 

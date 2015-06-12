@@ -3,13 +3,13 @@ package com.dopplereffekt.dopperlertogo;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,6 +38,7 @@ TODO GPS adressen checken ist erledigt. Alsächstes wäre checken, warum immer ein
 
 public class MainActivity extends Activity {
 
+    private ProgressDialog pDialog;
     public static LocationManager locationmanager = null;
     public static Location mylocation = null;
 
@@ -54,6 +55,14 @@ public class MainActivity extends Activity {
 
     private static final int CLOSE_APP = 1000;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
     private static final int SET_EVENT = 1001;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
+
+    public static String[] fixLighterAdresse;
+    public static String[] mobileLighterAdresse;
+    public static String[] laserLighterAdresse;
+    public static String[] controlePositionAdresse;
+    String[] lighterOptions = {"fixLighter", "mobileLighter", "laserLighter", "controlePosition"};
+
+    public static Intent backgroundservice = null;
 
     // public static boolean serviceLauft = false;
     private DrawerLayout mDrawerLayout;
@@ -84,6 +93,10 @@ public class MainActivity extends Activity {
 
         //Als aller erster wird  der Drawer gezeichnet damit navigiert werden kann.
         createDrawer(savedInstanceState);
+
+        //start service to download data from database
+        backgroundservice = new Intent(this, Backgrounddownloading.class);
+        startService(backgroundservice);
 
         //initialisierung der Files damit alle wieder auf dem neusetn stand sind. Falls nötig werden noch dateien Heruntergeladen
         //oder andere nötigen sachen gemacht.
@@ -123,6 +136,14 @@ public class MainActivity extends Activity {
     }
 
     public void initialization() {
+
+        pDialog = new ProgressDialog(MainActivity.this);
+        pDialog.setMessage("Adressen werden gedownloaded");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(true);
+        pDialog.show();
+
+
         //Die Klasse SharedPefrences hilft kleine Datensätze in der Internen Datenbank zu Speichern.
         //Wir speichern den aktuellen Tag rein damit das PDF nur 1x am tag heruntergeladen wird.
         //Sobald die Klasse ShowLighterList aufgerufen wird. wird der Letzte gespeicherte Tag aus er Datenbank geholt und in "alterTag" gespeichert.
@@ -132,7 +153,64 @@ public class MainActivity extends Activity {
         wantRecieveUpdates = settings.getBoolean("Updates", false);
         oldFiledate = settings.getString("oldFiledate", " ");
         newFiledate = settings.getString("newFiledate", " ");
+
+
+        String arrayName = null;
+        for (String eventoption : lighterOptions) {
+            switch (eventoption) {
+                case "fixLighter": {
+                    arrayName = "fixLighter";
+                    int size = settings.getInt(arrayName + "_size", 0);
+                    String array[] = new String[size];
+                    for (int i = 0; i < size; i++)
+                        fixLighterAdresse[i] = settings.getString(arrayName + "_" + i, null);
+                }
+                break;
+                case "mobileLighter": {
+                    arrayName = "mobileLighter";
+                    int size = settings.getInt(arrayName + "_size", 0);
+                    String array[] = new String[size];
+                    for (int i = 0; i < size; i++)
+                        mobileLighterAdresse[i] = settings.getString(arrayName + "_" + i, null);
+                }
+                break;
+                case "laserLighter": {
+                    arrayName = "laserLighter";
+                    int size = settings.getInt(arrayName + "_size", 0);
+                    String array[] = new String[size];
+                    for (int i = 0; i < size; i++)
+                        laserLighterAdresse[i] = settings.getString(arrayName + "_" + i, null);
+                }
+                break;
+                case "controlePosition": {
+                    arrayName = "controlePosition";
+                    int size = settings.getInt(arrayName + "_size", 0);
+                    String array[] = new String[size];
+                    for (int i = 0; i < size; i++)
+                        controlePositionAdresse[i] = settings.getString(arrayName + "_" + i, null);
+                }
+                break;
+            }
+
+            if(fixLighterAdresse!= null) {
+                for (String position : fixLighterAdresse) {
+                    Log.d("lesekunstler", position);
+                }
+            }else {
+                Log.d("lesekunstler", "die scheisse ist leer");
+            }
+        }
+
+
+        pDialog.dismiss();
     }
+
+
+        //hole aktuelle eintrag von jeder Tabelle.
+
+        //hole alle eintröge und befülle ein array.
+
+
 
     private void createDrawer(Bundle savedInstanceState) {
 
@@ -237,7 +315,11 @@ public class MainActivity extends Activity {
                 }
             }
             break;
-        }
+            case R.id.testbutton:{
+
+                }
+            break;
+            }
     }
 
 
@@ -494,6 +576,7 @@ public class MainActivity extends Activity {
         Log.d("activity", "im onDestroy");
         writeUpdateState(false);
         writedownloadDay(newDay);
+        stopService(backgroundservice);
         super.onDestroy();
     }
 
@@ -509,6 +592,18 @@ public class MainActivity extends Activity {
      */
     private class DownloadFile extends AsyncTask<String, Void, Void> {
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setTitle("Initialisierung");
+            pDialog.setMessage("Vorbereitungen in Arbeit");
+            pDialog.setProgressStyle(R.style.AppTheme);
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
         protected Void doInBackground(String... strings) {
             String fileUrl = strings[0];   // -> pdfurl
             String fileName = strings[1];  // -> ghost.pdf
@@ -523,6 +618,12 @@ public class MainActivity extends Activity {
             }
             FileDownloader.downloadFile(fileUrl, pdfFile);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            pDialog.dismiss();
         }
     }
 }
