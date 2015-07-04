@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,11 +44,9 @@ public class showLighterListFragment extends Fragment {
     ListView laserLigterList;
     ListView controlePostitionListView;
 
-   /* String[] fixLighterAdresse = MainActivity.fixLighterAdresse;
-    String[] mobileLighterAdresse = MainActivity.mobileLighterAdresse;
-    String[] laserLighterAdresse = MainActivity.laserLighterAdresse;
-    String[] controlePositionAdresse = MainActivity.controlePositionAdresse;*/
-    String[] placeHolderArray = {"leer", "leer", "leer", "leer", "leer", "leer", "leer", "leer"};
+
+
+    String[] placeHolderArray = {"download ist in arbeit", "download ist in arbeit", "download ist in arbeit"};
 
     List<android.location.Address> addresses;
 
@@ -63,6 +63,7 @@ public class showLighterListFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.showlighterlist_fragment, container, false);
 
+
         setHasOptionsMenu(true);
 
         publicLighterlist = (ListView) rootView.findViewById(R.id.publiclighterlist);
@@ -71,39 +72,80 @@ public class showLighterListFragment extends Fragment {
         laserLigterList = (ListView) rootView.findViewById(R.id.laserlighterlist);
 
 
-        publicLighterlist.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray()));
+        publicLighterlist.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,Backgrounddownloading.fixLighterAdresse));
         publicLighterlist.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
 
-        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, MainActivity.fixLighterAdresse));
+        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,Backgrounddownloading.fixLighterAdresse));
         fixLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_fixlighter));
 
-        mobileLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, MainActivity.mobileLighterAdresse));
+        mobileLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.mobileLighterAdresse));
         mobileLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_mobilelighter));
 
-        laserLigterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, MainActivity.laserLighterAdresse));
+        laserLigterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.laserLighterAdresse));
         laserLigterList.setBackgroundColor(getResources().getColor(R.color.listbachground_laserlighter));
-
-
-        setDynamicHeight(publicLighterlist);
-        setDynamicHeight(fixLighterList);
-        setDynamicHeight(mobileLighterList);
-        setDynamicHeight(laserLigterList);
-
 
         return rootView;
     }
 
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setListViewHeightBasedOnItems(publicLighterlist);
+        setListViewHeightBasedOnItems(fixLighterList);
+        setListViewHeightBasedOnItems(mobileLighterList);
+        setListViewHeightBasedOnItems(laserLigterList);
+    }
+
+    public static boolean setListViewHeightBasedOnItems(ListView listView) {
+
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter != null) {
+
+            int numberOfItems = listAdapter.getCount();
+
+            // Get total height of all items.
+            int totalItemsHeight = 0;
+            for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
+
+                Log.d("item", itemPos + "");
+                    View item = listAdapter.getView(itemPos, null, listView);
+                    item.measure(0, 0);
+                    totalItemsHeight += item.getMeasuredHeight();
+            }
+
+            // Get total height of all item dividers.
+            int totalDividersHeight = listView.getDividerHeight() *
+                    (numberOfItems - 1);
+
+            // Set list height.
+            ViewGroup.LayoutParams params = listView.getLayoutParams();
+            params.height = totalItemsHeight + totalDividersHeight;
+            listView.setLayoutParams(params);
+            listView.requestLayout();
+
+            return true;
+
+        } else {
+            return false;
+        }
+
+    }
+
     public static void setDynamicHeight(ListView mListView) {
         ListAdapter mListAdapter = mListView.getAdapter();
+        View listItem = null;
         if (mListAdapter == null) {
             // when adapter is null
+            Log.e("view", "mListAdapter ist leer");
             return;
         }
         int height = 0;
         int desiredWidth = View.MeasureSpec.makeMeasureSpec(mListView.getWidth(), View.MeasureSpec.UNSPECIFIED);
         for (int i = 0; i < mListAdapter.getCount(); i++) {
-            View listItem = mListAdapter.getView(i, null, mListView);
+            Log.d("dynamic", mListAdapter.toString());
+            Log.d("dynamic", "mlistview : " + mListView);
+            listItem = mListAdapter.getView(i, null, mListView);
             listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
             height += listItem.getMeasuredHeight();
         }
@@ -112,7 +154,6 @@ public class showLighterListFragment extends Fragment {
         mListView.setLayoutParams(params);
         mListView.requestLayout();
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -143,98 +184,6 @@ public class showLighterListFragment extends Fragment {
         return true;
     }
 
-
-
-    /**
-     *StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-     StrictMode.setThreadPolicy(policy);
-     */
-
-    class downloadEntityFormDatabase extends AsyncTask<String, String, String> {
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(getActivity());
-            pDialog.setMessage("Adressen werden gedownloaded");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
-        }
-
-
-
-        protected String doInBackground(String... args) {
-            // Building Parameters
-   /*         double lng;
-            double lat;
-            String comment = null;
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            // getting JSON string from URL
-            JSONObject json = jParser.makeHttpRequest(downloadwebsite, "GET", params);
-            if(json!=null) {
-                // Check your log cat for JSON reponse
-                Log.d("All Products: ", json.toString());
-            }else{
-                Log.d("download", "json ist leer");
-            }
-            try {
-                JSONArray jsonArray = json.getJSONArray("fixLighter");
-                Log.d("download", jsonArray.toString());
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject helpingObject = jsonArray.getJSONObject(i);
-                    lat = new Double(helpingObject.getString("latitude"));
-                    lng = new Double(helpingObject.getString("longitude"));
-                    comment = helpingObject.getString("comment");
-                    Log.d("objekte", lat + " , " + lng + " , " + comment);
-
-                    try {
-
-                        Geocoder geo = new Geocoder(getActivity().getApplicationContext(), Locale.getDefault());
-                        addresses = geo.getFromLocation(lat, lng, 1);
-                    } catch (IOException e) {
-
-                    }
-
-
-                    if (addresses.get(0).getLocality() == null) {
-                        fixLighterAdresse[i] = addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;                          //  Log.d("objekte",  addresses.get(0).getSubLocality() + ", " + addresses.get(0).getPostalCode() + " , " + addresses.get(0).getThoroughfare() + ", usercomment: " +comment);
-                    } else if (addresses.get(0).getSubLocality() == null) {
-                        fixLighterAdresse[i] = addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                        //  Log.d("objekte",  addresses.get(0).getLocality() + ", " + addresses.get(0).getPostalCode() + " , " + addresses.get(0).getThoroughfare() + ", usercomment: " +comment);
-                    }
-                }
-            } catch (JSONException e) {
-                Log.d("download", "etwas ging gründlich in die Hosen");
-            }
-
-
-            // Check your log cat for JSON reponse
-
-
-            for (String adressenausdb : fixLighterAdresse) {
-                if (adressenausdb != null) {
-                    Log.d("ausgabefix", adressenausdb);
-                }
-            }
-
-    */        return null;
-        }
-
-
-
-        protected void onPostExecute(String file_url) {
-
-
-            // dismiss the dialog once done
-            pDialog.dismiss();
-            Log.d("download", "ende download");
-
-
-        }
-
-    }
 
 }
 

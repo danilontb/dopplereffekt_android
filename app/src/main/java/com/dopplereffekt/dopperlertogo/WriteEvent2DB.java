@@ -113,7 +113,7 @@ finish();
         /**
          * Before starting background thread Show Progress Dialog
          */
-        @Override
+   /*     @Override
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(WriteEvent2DB.this);
@@ -122,7 +122,7 @@ finish();
             pDialog.setCancelable(true);
             pDialog.show();
         }
-
+*/
 
         /**
          * Read positions
@@ -165,13 +165,13 @@ finish();
          * After completing background task Dismiss the progress dialog
          * *
          */
-        protected void onPostExecute(String file_url) {
+  /*      protected void onPostExecute(String file_url) {
 
 
             // dismiss the dialog once done
             pDialog.dismiss();
 
         }
-
+*/
     }
 }

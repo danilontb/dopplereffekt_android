@@ -27,10 +27,12 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /*
 TODO GPS adressen checken ist erledigt. Alsächstes wäre checken, warum immer eine neues FIle heruntergeladen wird.
@@ -56,10 +58,7 @@ public class MainActivity extends Activity {
     private static final int CLOSE_APP = 1000;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
     private static final int SET_EVENT = 1001;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
 
-    public static String[] fixLighterAdresse;
-    public static String[] mobileLighterAdresse;
-    public static String[] laserLighterAdresse;
-    public static String[] controlePositionAdresse;
+
     String[] lighterOptions = {"fixLighter", "mobileLighter", "laserLighter", "controlePosition"};
 
     public static Intent backgroundservice = null;
@@ -90,60 +89,28 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d("init", "drawer startet");
 
         //Als aller erster wird  der Drawer gezeichnet damit navigiert werden kann.
         createDrawer(savedInstanceState);
 
+        //initialisierung der Files damit alle wieder auf dem neusetn stand sind. Falls nötig werden noch dateien Heruntergeladen
+        //oder andere nötigen sachen gemacht.
+        Log.d("init", "init sollte startetn");
+        new initialism().execute();
+
+        Log.d("init", "backgroundservice startet-");
         //start service to download data from database
         backgroundservice = new Intent(this, Backgrounddownloading.class);
         startService(backgroundservice);
 
-        //initialisierung der Files damit alle wieder auf dem neusetn stand sind. Falls nötig werden noch dateien Heruntergeladen
-        //oder andere nötigen sachen gemacht.
-        initialization();
 
-        //überprüfung ob das PDF schon existiert oder ob ein neues heruntergeladen werden muss.
-        if (ConvertPDF.pdfExists()) {
-            Log.d("PDF", "pdf existiert");
-            if (ConvertPDF.contentIsIn()) {
-                //überprüfung ob der Tag mit dem Letzten gespeicherten Tag übereinander stimmt.
-                if (neuerTag()) {
-                    //ist es ein neuer Tag, wird sofort eine PDF runtergeladen.
-                    download();
-                    //Toast sind kurzlebige "popups" die gebraucht werden können um den Benutzer über irgendwelche zustandsänderungen oder
-                    //Erfolge bzw Misserfolge des Prozesses zu informieren.
-                    Toast.makeText(this, "Neues File wurde heruntergeladen", Toast.LENGTH_SHORT).show();
-                    if (neuesFile()) {
-                        // startActivity(new Intent(this, WriteAdressesInDB.class));
-                        Log.d("pdfcheck", "It is a new File. I want to put the Addresses to the public database");
-                    } else {
-                        Toast.makeText(this, "File ist noch immer aktuell", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    //sollte das PDF heruntergeladen worden sein, jedoch der Inhalt noch nicht extrahiert werden konnte, wird die
-                    //app geschlossen, und man muss sie manuel nochmals starten.
-                    Toast.makeText(this, "File sind alle auf dem neusten Stand", Toast.LENGTH_SHORT).show();
 
-                }
-            } else {
-                Toast.makeText(this, "Files sind Inhaltslos. Reparatur in Arbeit.", Toast.LENGTH_SHORT).show();
-                download();
-            }
-        } else {
-            Log.d("PDF", "pdf existierte noch nicht.");
-            download();
-        }
+
+
     }
 
     public void initialization() {
-
-        pDialog = new ProgressDialog(MainActivity.this);
-        pDialog.setMessage("Adressen werden gedownloaded");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(true);
-        pDialog.show();
-
-
         //Die Klasse SharedPefrences hilft kleine Datensätze in der Internen Datenbank zu Speichern.
         //Wir speichern den aktuellen Tag rein damit das PDF nur 1x am tag heruntergeladen wird.
         //Sobald die Klasse ShowLighterList aufgerufen wird. wird der Letzte gespeicherte Tag aus er Datenbank geholt und in "alterTag" gespeichert.
@@ -154,62 +121,49 @@ public class MainActivity extends Activity {
         oldFiledate = settings.getString("oldFiledate", " ");
         newFiledate = settings.getString("newFiledate", " ");
 
+        Log.d("filereader", " newFiledate: " + newFiledate);
+        Log.d("filereader", " oldFiledate: " + oldFiledate);
 
-        String arrayName = null;
-        for (String eventoption : lighterOptions) {
-            switch (eventoption) {
-                case "fixLighter": {
-                    arrayName = "fixLighter";
-                    int size = settings.getInt(arrayName + "_size", 0);
-                    String array[] = new String[size];
-                    for (int i = 0; i < size; i++)
-                        fixLighterAdresse[i] = settings.getString(arrayName + "_" + i, null);
+        //überprüfung ob das PDF schon existiert oder ob ein neues heruntergeladen werden muss.
+        if (ConvertPDF.pdfExists()) {
+            Log.d("pdfcheck", "pdf existiert");
+            if (ConvertPDF.contentIsIn()) {
+                //überprüfung ob der Tag mit dem Letzten gespeicherten Tag übereinander stimmt.
+                if (neuerTag()) {
+                    //ist es ein neuer Tag, wird sofort eine PDF runtergeladen.
+                    download();
+                    //Toast sind kurzlebige "popups" die gebraucht werden können um den Benutzer über irgendwelche zustandsänderungen oder
+                    //Erfolge bzw Misserfolge des Prozesses zu informieren.
+        //            Toast.makeText(this, "Neues File wurde heruntergeladen", Toast.LENGTH_SHORT).show();
+                    Log.d("pdfcheck", "maketoast neues file wurde heruntergeladen");
+                    if (neuesFile()) {
+                        // startActivity(new Intent(this, WriteAdressesInDB.class));
+                        Log.d("pdfcheck", "It is a new File. I want to put the Addresses to the public database");
+                    } else {
+        //                Toast.makeText(this, "File ist noch immer aktuell", Toast.LENGTH_SHORT).show();
+                        Log.d("pdfcheck", "maketoast File noch immer aktuell");
+                    }
+                } else {
+                    //sollte das PDF heruntergeladen worden sein, jedoch der Inhalt noch nicht extrahiert werden konnte, wird die
+                    //app geschlossen, und man muss sie manuel nochmals starten.
+        //            Toast.makeText(this, "File sind alle auf dem neusten Stand", Toast.LENGTH_SHORT).show();
+                    Log.d("pdfcheck", "maketoast File sind alle auf dem neusten Stand");
                 }
-                break;
-                case "mobileLighter": {
-                    arrayName = "mobileLighter";
-                    int size = settings.getInt(arrayName + "_size", 0);
-                    String array[] = new String[size];
-                    for (int i = 0; i < size; i++)
-                        mobileLighterAdresse[i] = settings.getString(arrayName + "_" + i, null);
-                }
-                break;
-                case "laserLighter": {
-                    arrayName = "laserLighter";
-                    int size = settings.getInt(arrayName + "_size", 0);
-                    String array[] = new String[size];
-                    for (int i = 0; i < size; i++)
-                        laserLighterAdresse[i] = settings.getString(arrayName + "_" + i, null);
-                }
-                break;
-                case "controlePosition": {
-                    arrayName = "controlePosition";
-                    int size = settings.getInt(arrayName + "_size", 0);
-                    String array[] = new String[size];
-                    for (int i = 0; i < size; i++)
-                        controlePositionAdresse[i] = settings.getString(arrayName + "_" + i, null);
-                }
-                break;
+            } else {
+       //         Toast.makeText(this, "Files sind Inhaltslos. Reparatur in Arbeit.", Toast.LENGTH_SHORT).show();
+                Log.d("pdfcheck", "maketoast File sind Inhaltslos Reparatur in arbeit");
+                download();
             }
-
-            if(fixLighterAdresse!= null) {
-                for (String position : fixLighterAdresse) {
-                    Log.d("lesekunstler", position);
-                }
-            }else {
-                Log.d("lesekunstler", "die scheisse ist leer");
-            }
+        } else {
+            Log.d("PDF", "pdf existierte noch nicht.");
+            download();
         }
-
-
-        pDialog.dismiss();
     }
 
 
-        //hole aktuelle eintrag von jeder Tabelle.
+    //hole aktuelle eintrag von jeder Tabelle.
 
-        //hole alle eintröge und befülle ein array.
-
+    //hole alle eintröge und befülle ein array.
 
 
     private void createDrawer(Bundle savedInstanceState) {
@@ -315,11 +269,10 @@ public class MainActivity extends Activity {
                 }
             }
             break;
-            case R.id.testbutton:{
-
-                }
-            break;
+            case R.id.testbutton: {
             }
+            break;
+        }
     }
 
 
@@ -364,6 +317,7 @@ public class MainActivity extends Activity {
     public boolean neuesFile() {
         newFiledate = ConvertPDF.getUpdateDate().replace(" ", "");
         if (newFiledate.equals(oldFiledate)) {
+            writeUpdateDates(newFiledate, oldFiledate);
             return false;
         } else {
             oldFiledate = newFiledate;
@@ -420,7 +374,6 @@ public class MainActivity extends Activity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
 
     /**
@@ -501,7 +454,7 @@ public class MainActivity extends Activity {
                 fragment = new WarningFragment();
                 break;
             case 1:
-                fragment = new showLighterListFragment();
+         //      fragment = new showLighterListFragment();
                 break;
             case 2:
                 fragment = new InformationOtherFragment();
@@ -625,5 +578,38 @@ public class MainActivity extends Activity {
             super.onPostExecute(aVoid);
             pDialog.dismiss();
         }
+    }
+
+    /**
+     * über die innere Klasse kann ich nicht viel sagen. Sie wird benötigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgeführt.
+     */
+    private class initialism extends AsyncTask<String, Void, Void> {
+     /*    @Override
+       protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d("init", "init gestartett");
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setTitle("Initialisierung");
+            pDialog.setMessage("Daten werden vorbereitet.");
+            pDialog.setProgressStyle(R.style.AppTheme);
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+*/
+        @Override
+        protected Void doInBackground(String... strings) {
+
+
+            initialization();
+            return null;
+        }
+
+ /*       @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            pDialog.dismiss();
+        }
+   */
     }
 }

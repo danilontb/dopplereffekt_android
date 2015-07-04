@@ -1,12 +1,10 @@
 package com.dopplereffekt.dopperlertogo;
 
 
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
+
 import android.location.Geocoder;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -18,8 +16,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,51 +30,75 @@ import java.util.TimerTask;
  */
 public class Backgrounddownloading extends Service {
 
-    private ProgressDialog pDialog;
     JSONParser jParser = new JSONParser();
+    int aktualisierungszyklus = 3600000;    //immer in ms angeben 3600000ms = 1h
     String downloadwebsite = "http://dopplereffekt.freehostingking.com/readfromdatabase.php";
     String getNumberOfEntity = "http://dopplereffekt.freehostingking.com/getnumberofentity.php";
     List<android.location.Address> addresses;
     String[] lighterOptions = {"fixLighter", "mobileLighter", "laserLighter", "controlePosition"};
+    public static boolean readable = true;
 
+    public static List fixLighterAdresse;
+    public static List mobileLighterAdresse;
+    public static List laserLighterAdresse;
+    public static List controlePositionAdresse;
 
     @Override
     public void onCreate() {
+        fixLighterAdresse = new ArrayList();
+        mobileLighterAdresse = new ArrayList();
+        laserLighterAdresse = new ArrayList();
+        controlePositionAdresse = new ArrayList();
+
         Log.d("Backgrounddownloading", "oncreate");
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-
+                              clearAllLists();
                 try {
+                    readInformation();
+                    Log.d("outputgeo", "reading is done");
 
-                    new readInformation().execute();
+                    writeInfomationOut();
                     Log.d("Backgrounddownloading", "async wurde auger");
                     //write lighterposition to external File.
 
-
-                    writePostions(MainActivity.fixLighterAdresse, "fixLighterAdresse");
-                    writePostions(MainActivity.mobileLighterAdresse, "mobileLighterAdresse");
-                    writePostions(MainActivity.laserLighterAdresse, "laserLighterAdresse");
-                    writePostions(MainActivity.controlePositionAdresse, "controlePositionAdresse");
-
                 } catch (Exception e) {
                     // TODO: handle exception
+                    Log.d("readinformation", "anything is going wrong");
+                    Log.e("readinformation", e.toString());
                 }
 
             }
-        }, 0, 15000);
+        }, 0, aktualisierungszyklus);
     }
 
 
-    public void writePostions(String[] array, String arrayName) {
-        SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, getApplicationContext().MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(arrayName + "_size", array.length);
-        for (int i = 0; i < array.length; i++)
-            editor.putString(arrayName + "_" + i, array[i]);
-        editor.commit();
+    private void writeInfomationOut() {
+        Iterator iterator = fixLighterAdresse.iterator();
+        while (iterator.hasNext()) {
+            Log.d("outputgeo2", "fixlighter : " + (String) iterator.next());
+        }
+        iterator = mobileLighterAdresse.iterator();
+        while (iterator.hasNext()) {
+            Log.d("outputgeo2", "mobile : " + (String) iterator.next());
+        }
+        iterator = laserLighterAdresse.iterator();
+        while (iterator.hasNext()) {
+            Log.d("outputgeo2", "laser : " + (String) iterator.next());
+        }
+        iterator = controlePositionAdresse.iterator();
+        while (iterator.hasNext()) {
+            Log.d("outputgeo2",  "controle : " + (String) iterator.next());
+        }
     }
 
+    private void clearAllLists() {
+        fixLighterAdresse.clear();
+        mobileLighterAdresse.clear();
+        laserLighterAdresse.clear();
+        controlePositionAdresse.clear();
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -88,117 +112,84 @@ public class Backgrounddownloading extends Service {
     }
 
 
-    /**
-     * Background Async Task to Create new product
-     */
-    class readInformation extends AsyncTask<String, String, String> {
-
+    private void readInformation() {
         double lat;
         double lng;
         String comment = null;
+        JSONObject helpingObject = null;
 
-        /**
-         * Read positions
-         */
-        protected String doInBackground(String... args) {
+        for (String option : lighterOptions) {
+            List<NameValuePair> list = new ArrayList<NameValuePair>();
+            list.add(new BasicNameValuePair("databasename", option));
+            JSONObject json = jParser.makeHttpRequest(downloadwebsite, "POST", list);
+            if (json != null) {
 
-            for (String option : lighterOptions) {
-                List<NameValuePair> list = new ArrayList<NameValuePair>();
-                list.add(new BasicNameValuePair("databasename", option));
-                JSONObject json = jParser.makeHttpRequest(downloadwebsite, "POST", list);
-                if (json != null) {
-                    // Check your log cat for JSON reponse
-                    //  Log.d("Backgrounddownloading", json.toString());
-
-
-                    try {
-                        //array werden mit anzahl Blitzer bestückt.
-                        int anzahl = json.getInt("anzLighter");
-                        switch (option) {
-                            case "fixLighter":
-                                MainActivity.fixLighterAdresse = new String[anzahl];
-                                break;
-                            case "mobileLighter":
-                                MainActivity.mobileLighterAdresse = new String[anzahl];
-                                break;
-                            case "laserLighter":
-                                MainActivity.laserLighterAdresse = new String[anzahl];
-                                break;
-                            case "controlePosition":
-                                MainActivity.controlePositionAdresse = new String[anzahl];
-                                break;
-                        }
-
-                        JSONArray jsonArray = json.getJSONArray(option);
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject helpingObject = jsonArray.getJSONObject(i);
-                            lat = new Double(helpingObject.getString("latitude"));
-                            lng = new Double(helpingObject.getString("longitude"));
-                            comment = helpingObject.getString("comment");
+                try {
+                    JSONArray jsonArray = json.getJSONArray(option);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        helpingObject = jsonArray.getJSONObject(i);
+                        lat = new Double(helpingObject.getString("latitude"));
+                        lng = new Double(helpingObject.getString("longitude"));
+                        comment = helpingObject.getString("comment");
 
 
-                            Geocoder geo = new Geocoder(getApplicationContext(), Locale.getDefault());
-                            addresses = geo.getFromLocation(lat, lng, 1);
+                        Geocoder geo = new Geocoder(getApplicationContext(), Locale.getDefault());
+                        addresses = geo.getFromLocation(lat, lng, 1);
 
-                            if (addresses.get(0).getLocality() == null) {
-                                switch (option) {
-                                    case "fixLighter": {
-                                        MainActivity.fixLighterAdresse[i] = addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                                    }
-                                    break;
-                                    case "mobileLighter": {
-                                        MainActivity.mobileLighterAdresse[i] = addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                                    }
-                                    break;
-                                    case "laserLighter": {
-                                        MainActivity.laserLighterAdresse[i] = addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                                    }
-                                    break;
-                                    case "controlePosition": {
-                                        MainActivity.controlePositionAdresse[i] = addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                                    }
-                                    break;
+
+                        if (addresses.get(0).getLocality() == null) {
+                            switch (option) {
+                                case "fixLighter": {
+                                    fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
                                 }
-                            } else if (addresses.get(0).getSubLocality() == null) {
-                                switch (option) {
-                                    case "fixLighter": {
-                                        MainActivity.fixLighterAdresse[i] = addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                                    }
-                                    break;
-                                    case "mobileLighter": {
-                                        MainActivity.mobileLighterAdresse[i] = addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                                    }
-                                    break;
-                                    case "laserLighter": {
-                                        MainActivity.laserLighterAdresse[i] = addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                                    }
-                                    break;
-                                    case "controlePosition": {
-                                        MainActivity.controlePositionAdresse[i] = addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment;
-                                    }
-                                    break;
+                                break;
+                                case "mobileLighter": {
+                                    mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
                                 }
+                                break;
+                                case "laserLighter": {
+                                    laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                }
+                                break;
+                                case "controlePosition": {
+                                    controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                }
+                                break;
                             }
+                        } else if (addresses.get(0).getSubLocality() == null) {
+                            Log.d("outputgeo", addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
 
 
-                            Log.d("Backgrounddownloading", option + " anzahl : " + anzahl);
-                            Log.d("Backgrounddownloading", lat + " , " + lng + " , " + comment);
-
-
+                            switch (option) {
+                                case "fixLighter": {
+                                    fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                }
+                                break;
+                                case "mobileLighter": {
+                                    mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                }
+                                break;
+                                case "laserLighter": {
+                                    laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                }
+                                break;
+                                case "controlePosition": {
+                                    controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                }
+                                break;
+                            }
+                        } else {
+                            Log.d("problem", "die adresse war leer und wird somit abgebrochen");
                         }
-                    } catch (JSONException | IOException e) {
-
                     }
+                } catch (JSONException | IOException e) {
 
-
-                } else {
-                    Log.d("Backgrounddownloading", "json ist leer");
                 }
-
+            } else {
+                Log.d("Backgrounddownloading", "json ist leer");
             }
-            return null;
+
         }
-
-
     }
+
 }
