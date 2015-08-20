@@ -35,7 +35,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 /*
-TODO GPS adressen checken ist erledigt. Alsächstes wäre checken, warum immer eine neues FIle heruntergeladen wird.
+TODO GPS adressen checken ist erledigt. Alsï¿½chstes wï¿½re checken, warum immer eine neues FIle heruntergeladen wird.
  */
 
 public class MainActivity extends Activity {
@@ -48,12 +48,12 @@ public class MainActivity extends Activity {
     public static String pdfname = "publicLighter";
     public static String pdfurl = "http://www.kapo.sg.ch/home/informationen/verkehr/_jcr_content/Par/downloadlist_0/DownloadListPar/download.ocFile/2014%2012%2017_Semistation%C3%A4re%20Messanlagen.pdf";
 
-    int newDay = 0;            //Wird in internen Files gespeichert
+    int newDay = 0;       //Wird in internen Files gespeichert
     int oldDay = 0;       //Wird in internen Files gespeichert
-    String oldFiledate = null; //Bei oldFiledate und newFiledate handelt es sich effektiv um das Datum auf dem PDF. Anhand vom aushändigungsdatum des File wird entschieden, ob  (nächste zeile))
+    String oldFiledate = null; //Bei oldFiledate und newFiledate handelt es sich effektiv um das Datum auf dem PDF. Anhand vom aushï¿½ndigungsdatum des File wird entschieden, ob  (nï¿½chste zeile))
     String newFiledate = null; //die Information des Files in eine Externe Datenbank gespeichert wird. --> Nicht das gleiche wie Neuer Tag.
-    public static final String PREFS_NAME = "MyPrefsFile";              //so heisst das File, dass jegliche Daten der App enthält.
-    public static boolean wantRecieveUpdates = false;               //Bit wird gesetzt, wenn der Customer updates wünscht.
+    public static final String PREFS_NAME = "MyPrefsFile";              //so heisst das File, dass jegliche Daten der App enthï¿½lt.
+    public static boolean wantRecieveUpdates = false;               //Bit wird gesetzt, wenn der Customer updates wï¿½nscht.
 
     private static final int CLOSE_APP = 1000;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
     private static final int SET_EVENT = 1001;                     //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
@@ -94,8 +94,8 @@ public class MainActivity extends Activity {
         //Als aller erster wird  der Drawer gezeichnet damit navigiert werden kann.
         createDrawer(savedInstanceState);
 
-        //initialisierung der Files damit alle wieder auf dem neusetn stand sind. Falls nötig werden noch dateien Heruntergeladen
-        //oder andere nötigen sachen gemacht.
+        //initialisierung der Files damit alle wieder auf dem neusetn stand sind. Falls nï¿½tig werden noch dateien Heruntergeladen
+        //oder andere nï¿½tigen sachen gemacht.
         Log.d("init", "init sollte startetn");
         new initialism().execute();
 
@@ -111,10 +111,10 @@ public class MainActivity extends Activity {
     }
 
     public void initialization() {
-        //Die Klasse SharedPefrences hilft kleine Datensätze in der Internen Datenbank zu Speichern.
+        //Die Klasse SharedPefrences hilft kleine Datensï¿½tze in der Internen Datenbank zu Speichern.
         //Wir speichern den aktuellen Tag rein damit das PDF nur 1x am tag heruntergeladen wird.
         //Sobald die Klasse ShowLighterList aufgerufen wird. wird der Letzte gespeicherte Tag aus er Datenbank geholt und in "alterTag" gespeichert.
-        //Auch der wunsch über Updates wird gespeichert solange wie die Activity lebt.
+        //Auch der wunsch ï¿½ber Updates wird gespeichert solange wie die Activity lebt.
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         oldDay = settings.getInt("Tag", 0);
         wantRecieveUpdates = settings.getBoolean("Updates", false);
@@ -124,15 +124,15 @@ public class MainActivity extends Activity {
         Log.d("filereader", " newFiledate: " + newFiledate);
         Log.d("filereader", " oldFiledate: " + oldFiledate);
 
-        //überprüfung ob das PDF schon existiert oder ob ein neues heruntergeladen werden muss.
+        //ï¿½berprï¿½fung ob das PDF schon existiert oder ob ein neues heruntergeladen werden muss.
         if (ConvertPDF.pdfExists()) {
             Log.d("pdfcheck", "pdf existiert");
             if (ConvertPDF.contentIsIn()) {
-                //überprüfung ob der Tag mit dem Letzten gespeicherten Tag übereinander stimmt.
+                //ï¿½berprï¿½fung ob der Tag mit dem Letzten gespeicherten Tag ï¿½bereinander stimmt.
                 if (neuerTag()) {
                     //ist es ein neuer Tag, wird sofort eine PDF runtergeladen.
                     download();
-                    //Toast sind kurzlebige "popups" die gebraucht werden können um den Benutzer über irgendwelche zustandsänderungen oder
+                    //Toast sind kurzlebige "popups" die gebraucht werden kï¿½nnen um den Benutzer ï¿½ber irgendwelche zustandsï¿½nderungen oder
                     //Erfolge bzw Misserfolge des Prozesses zu informieren.
         //            Toast.makeText(this, "Neues File wurde heruntergeladen", Toast.LENGTH_SHORT).show();
                     Log.d("pdfcheck", "maketoast neues file wurde heruntergeladen");
@@ -160,12 +160,6 @@ public class MainActivity extends Activity {
         }
     }
 
-
-    //hole aktuelle eintrag von jeder Tabelle.
-
-    //hole alle eintröge und befülle ein array.
-
-
     private void createDrawer(Bundle savedInstanceState) {
 
         mTitle = mDrawerTitle = getTitle();
@@ -184,7 +178,7 @@ public class MainActivity extends Activity {
         // adding nav drawer items to array
         // Mich warnen
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-        // Zeige öffentliche Blitzer
+        // Zeige ï¿½ffentliche Blitzer
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
         // Blitzer melden
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
@@ -192,7 +186,7 @@ public class MainActivity extends Activity {
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "258"));
         // deine Meinung
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-        // über uns
+        // ï¿½ber uns
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1), true, "50+"));
 
 
@@ -249,9 +243,9 @@ public class MainActivity extends Activity {
         switch (view.getId()) {
             case R.id.btn_position: {
 
-                Log.d("buttonausfragment", "button position gedrückt. ");
+                Log.d("buttonausfragment", "button position gedrï¿½ckt. ");
                 LocationManager service;
-                //Der LocationManager wird benötigt, um abzufragen, ob der User das GPS eingeschaltet hat.
+                //Der LocationManager wird benï¿½tigt, um abzufragen, ob der User das GPS eingeschaltet hat.
                 service = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 if (service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -293,8 +287,8 @@ public class MainActivity extends Activity {
 
 
     /**
-     * überprüft ob heute diese Methode das erste mal oder nicht aufgerufen wird.
-     * sollte sie das erste mal aufgerufen worden sein, gibt sie True zurück und man weiss, heute ist ein neur tag.
+     * ï¿½berprï¿½ft ob heute diese Methode das erste mal oder nicht aufgerufen wird.
+     * sollte sie das erste mal aufgerufen worden sein, gibt sie True zurï¿½ck und man weiss, heute ist ein neur tag.
      * Gleichzeitig wird der heutige Tag als alter Tag eingetragen, weil die Methode nun schon einmal aufgerufen worden ist.
      * Im Falle von false wurde die Methode schon mal aufgerufen.
      */
@@ -311,7 +305,7 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Diese Method üerprüft ob der Datumsstämpfel mit dem Datumsstempfel des Letzten mal übereinstimmt. Sollte dies der Fall sein wird nichts unternommen.
+     * Diese Method ï¿½erprï¿½ft ob der Datumsstï¿½mpfel mit dem Datumsstempfel des Letzten mal ï¿½bereinstimmt. Sollte dies der Fall sein wird nichts unternommen.
      * Andernfalls wird das oldFiledate geupdatet und die neu heruntergeladene Adressen werden in eine Datenbank gepeichert. oldFiledate und newFiledate werden lokal in der Datenbank gepeichert.
      */
     public boolean neuesFile() {
@@ -356,7 +350,7 @@ public class MainActivity extends Activity {
 
     /**
      * Diese Methode wird aufgerufen, wen sogenannte Key_Events passieren. Diese Spezifische Methode meldet
-     * sich sobald der KEYCODE_BACK (Zurückbutton) getätigt wird...Jedoch nur, wenn diese Activity im Fokus steht.
+     * sich sobald der KEYCODE_BACK (Zurï¿½ckbutton) getï¿½tigt wird...Jedoch nur, wenn diese Activity im Fokus steht.
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -377,8 +371,8 @@ public class MainActivity extends Activity {
 
 
     /**
-     * Diese Methode wird gestartet, wenn vorher ein startActivityForResult getätigt wurde.
-     * Sobald die gestartet Activity "stribt" geht der Focus zurück und die Methode onActivityResult
+     * Diese Methode wird gestartet, wenn vorher ein startActivityForResult getï¿½tigt wurde.
+     * Sobald die gestartet Activity "stribt" geht der Focus zurï¿½ck und die Methode onActivityResult
      * wird aufgerufen.
      */
     @Override
@@ -425,7 +419,7 @@ public class MainActivity extends Activity {
                 return true;
             }
             case R.id.action_example: {
-                Log.d("Example", "der button werude gedrückt.");
+                Log.d("Example", "der button werude gedrï¿½ckt.");
             }
             default:
                 return super.onOptionsItemSelected(item);
@@ -454,7 +448,7 @@ public class MainActivity extends Activity {
                 fragment = new WarningFragment();
                 break;
             case 1:
-         //      fragment = new showLighterListFragment();
+               fragment = new showLighterListFragment();
                 break;
             case 2:
                 fragment = new InformationOtherFragment();
@@ -534,26 +528,27 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Die Methode download() übergibt einer inneren Klasse den Webpfad, wo das pdf zu finden ist, und gleichzeitig wie das pdf genannt werden muss.
+     * Die Methode download() ï¿½bergibt einer inneren Klasse den Webpfad, wo das pdf zu finden ist, und gleichzeitig wie das pdf genannt werden muss.
      */
     public void download() {
         new DownloadFile().execute(pdfurl, pdfname);
     }
 
     /**
-     * über die innere Klasse kann ich nicht viel sagen. Sie wird benötigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgeführt.
+     * ï¿½ber die innere Klasse kann ich nicht viel sagen. Sie wird benï¿½tigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgefï¿½hrt.
      */
     private class DownloadFile extends AsyncTask<String, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
+  /*          pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setTitle("Initialisierung");
             pDialog.setMessage("Vorbereitungen in Arbeit");
             pDialog.setProgressStyle(R.style.AppTheme);
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
+   */
         }
 
         @Override
@@ -576,34 +571,34 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            pDialog.dismiss();
+ //           pDialog.dismiss();
         }
     }
 
     /**
-     * über die innere Klasse kann ich nicht viel sagen. Sie wird benötigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgeführt.
-     */
-    private class initialism extends AsyncTask<String, Void, Void> {
-     /*    @Override
-       protected void onPreExecute() {
-            super.onPreExecute();
-            Log.d("init", "init gestartett");
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setTitle("Initialisierung");
-            pDialog.setMessage("Daten werden vorbereitet.");
-            pDialog.setProgressStyle(R.style.AppTheme);
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
-        }
-*/
-        @Override
-        protected Void doInBackground(String... strings) {
+         * ï¿½ber die innere Klasse kann ich nicht viel sagen. Sie wird benï¿½tigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgefï¿½hrt.
+         */
+        private class initialism extends AsyncTask<String, Void, Void> {
+            /*    @Override
+              protected void onPreExecute() {
+                   super.onPreExecute();
+                   Log.d("init", "init gestartett");
+                   pDialog = new ProgressDialog(MainActivity.this);
+                   pDialog.setTitle("Initialisierung");
+                   pDialog.setMessage("Daten werden vorbereitet.");
+                   pDialog.setProgressStyle(R.style.AppTheme);
+                   pDialog.setIndeterminate(false);
+                   pDialog.setCancelable(true);
+                   pDialog.show();
+               }
+       */
+            @Override
+            protected Void doInBackground(String... strings) {
 
 
-            initialization();
-            return null;
-        }
+                initialization();
+                return null;
+            }
 
  /*       @Override
         protected void onPostExecute(Void aVoid) {

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.location.Geocoder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -31,17 +32,25 @@ import java.util.TimerTask;
 public class Backgrounddownloading extends Service {
 
     JSONParser jParser = new JSONParser();
-    int aktualisierungszyklus = 3600000;    //immer in ms angeben 3600000ms = 1h
+    int aktualisierungszyklus = 1000*15*60;    //immer in ms angeben 3600000ms = 1h
     String downloadwebsite = "http://dopplereffekt.freehostingking.com/readfromdatabase.php";
     String getNumberOfEntity = "http://dopplereffekt.freehostingking.com/getnumberofentity.php";
     List<android.location.Address> addresses;
     String[] lighterOptions = {"fixLighter", "mobileLighter", "laserLighter", "controlePosition"};
-    public static boolean readable = true;
+    public static boolean readable = false;
 
     public static List fixLighterAdresse;
     public static List mobileLighterAdresse;
     public static List laserLighterAdresse;
     public static List controlePositionAdresse;
+    public static List fixLighterlng;
+    public static List mobileLighterlng;
+    public static List laserLighterlng;
+    public static List controlePositionlng;
+    public static List fixLighterlat;
+    public static List mobileLighterlat;
+    public static List laserLighterlat;
+    public static List controlePositionlat;
 
     @Override
     public void onCreate() {
@@ -50,16 +59,28 @@ public class Backgrounddownloading extends Service {
         laserLighterAdresse = new ArrayList();
         controlePositionAdresse = new ArrayList();
 
+        fixLighterlng= new ArrayList();
+        mobileLighterlng = new ArrayList();
+        laserLighterlng = new ArrayList();
+        controlePositionlng = new ArrayList();
+
+        fixLighterlat = new ArrayList();
+        mobileLighterlat = new ArrayList();
+        laserLighterlat = new ArrayList();
+        controlePositionlat = new ArrayList();
+
+
         Log.d("Backgrounddownloading", "oncreate");
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                              clearAllLists();
+                clearAllLists();
                 try {
+                    readable = false;
                     readInformation();
                     Log.d("outputgeo", "reading is done");
+                  readable = true;
 
-                    writeInfomationOut();
                     Log.d("Backgrounddownloading", "async wurde auger");
                     //write lighterposition to external File.
 
@@ -74,30 +95,19 @@ public class Backgrounddownloading extends Service {
     }
 
 
-    private void writeInfomationOut() {
-        Iterator iterator = fixLighterAdresse.iterator();
-        while (iterator.hasNext()) {
-            Log.d("outputgeo2", "fixlighter : " + (String) iterator.next());
-        }
-        iterator = mobileLighterAdresse.iterator();
-        while (iterator.hasNext()) {
-            Log.d("outputgeo2", "mobile : " + (String) iterator.next());
-        }
-        iterator = laserLighterAdresse.iterator();
-        while (iterator.hasNext()) {
-            Log.d("outputgeo2", "laser : " + (String) iterator.next());
-        }
-        iterator = controlePositionAdresse.iterator();
-        while (iterator.hasNext()) {
-            Log.d("outputgeo2",  "controle : " + (String) iterator.next());
-        }
-    }
-
     private void clearAllLists() {
         fixLighterAdresse.clear();
         mobileLighterAdresse.clear();
         laserLighterAdresse.clear();
         controlePositionAdresse.clear();
+        fixLighterlng.clear();
+        mobileLighterlng.clear();
+        laserLighterlng.clear();
+        controlePositionlng.clear();
+        fixLighterlat.clear();
+        mobileLighterlat.clear();
+        laserLighterlat.clear();
+        controlePositionlat.clear();
     }
 
     @Override
@@ -141,18 +151,26 @@ public class Backgrounddownloading extends Service {
                             switch (option) {
                                 case "fixLighter": {
                                     fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                    fixLighterlat.add(lat);
+                                    fixLighterlng.add(lng);
                                 }
                                 break;
                                 case "mobileLighter": {
                                     mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                    mobileLighterlat.add(lat);
+                                    mobileLighterlng.add(lng);
                                 }
                                 break;
                                 case "laserLighter": {
                                     laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                    laserLighterlat.add(lat);
+                                    laserLighterlng.add(lng);
                                 }
                                 break;
                                 case "controlePosition": {
                                     controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                    controlePositionlat.add(lat);
+                                    controlePositionlng.add(lng);
                                 }
                                 break;
                             }

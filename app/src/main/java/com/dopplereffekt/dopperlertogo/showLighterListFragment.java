@@ -2,12 +2,12 @@ package com.dopplereffekt.dopperlertogo;
 
 
 import android.app.Fragment;
+
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
-import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,16 +20,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.apache.http.NameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by dsantagata on 31.05.2015.
@@ -42,8 +35,7 @@ public class showLighterListFragment extends Fragment {
     ListView fixLighterList;
     ListView mobileLighterList;
     ListView laserLigterList;
-    ListView controlePostitionListView;
-
+    ListView controleList;
 
 
     String[] placeHolderArray = {"download ist in arbeit", "download ist in arbeit", "download ist in arbeit"};
@@ -66,16 +58,23 @@ public class showLighterListFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
+
         publicLighterlist = (ListView) rootView.findViewById(R.id.publiclighterlist);
         fixLighterList = (ListView) rootView.findViewById(R.id.fixlighterlist);
         mobileLighterList = (ListView) rootView.findViewById(R.id.mobilelighterlist);
         laserLigterList = (ListView) rootView.findViewById(R.id.laserlighterlist);
+        controleList = (ListView) rootView.findViewById(R.id.controleList);
 
+        publicLighterlist.requestLayout();
+        fixLighterList.requestLayout();
+        mobileLighterList.requestLayout();
+        laserLigterList.requestLayout();
+        controleList.requestLayout();
 
-        publicLighterlist.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,Backgrounddownloading.fixLighterAdresse));
+        publicLighterlist.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray()));
         publicLighterlist.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
 
-        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,Backgrounddownloading.fixLighterAdresse));
+        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.fixLighterAdresse));
         fixLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_fixlighter));
 
         mobileLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.mobileLighterAdresse));
@@ -84,9 +83,21 @@ public class showLighterListFragment extends Fragment {
         laserLigterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.laserLighterAdresse));
         laserLigterList.setBackgroundColor(getResources().getColor(R.color.listbachground_laserlighter));
 
+        controleList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.controlePositionAdresse));
+        controleList.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
+
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        //start here the async
+        new waiting().execute();
+
+
+
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -95,6 +106,7 @@ public class showLighterListFragment extends Fragment {
         setListViewHeightBasedOnItems(fixLighterList);
         setListViewHeightBasedOnItems(mobileLighterList);
         setListViewHeightBasedOnItems(laserLigterList);
+        setListViewHeightBasedOnItems(controleList);
     }
 
     public static boolean setListViewHeightBasedOnItems(ListView listView) {
@@ -109,9 +121,9 @@ public class showLighterListFragment extends Fragment {
             for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
 
                 Log.d("item", itemPos + "");
-                    View item = listAdapter.getView(itemPos, null, listView);
-                    item.measure(0, 0);
-                    totalItemsHeight += item.getMeasuredHeight();
+                View item = listAdapter.getView(itemPos, null, listView);
+                item.measure(0, 0);
+                totalItemsHeight += item.getMeasuredHeight();
             }
 
             // Get total height of all item dividers.
@@ -132,28 +144,7 @@ public class showLighterListFragment extends Fragment {
 
     }
 
-    public static void setDynamicHeight(ListView mListView) {
-        ListAdapter mListAdapter = mListView.getAdapter();
-        View listItem = null;
-        if (mListAdapter == null) {
-            // when adapter is null
-            Log.e("view", "mListAdapter ist leer");
-            return;
-        }
-        int height = 0;
-        int desiredWidth = View.MeasureSpec.makeMeasureSpec(mListView.getWidth(), View.MeasureSpec.UNSPECIFIED);
-        for (int i = 0; i < mListAdapter.getCount(); i++) {
-            Log.d("dynamic", mListAdapter.toString());
-            Log.d("dynamic", "mlistview : " + mListView);
-            listItem = mListAdapter.getView(i, null, mListView);
-            listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-            height += listItem.getMeasuredHeight();
-        }
-        ViewGroup.LayoutParams params = mListView.getLayoutParams();
-        params.height = height + (mListView.getDividerHeight() * (mListAdapter.getCount() - 1));
-        mListView.setLayoutParams(params);
-        mListView.requestLayout();
-    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -184,6 +175,48 @@ public class showLighterListFragment extends Fragment {
         return true;
     }
 
+
+    /**
+     * über die innere Klasse kann ich nicht viel sagen. Sie wird benötigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgeführt.
+     */
+    private class waiting extends AsyncTask<String, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d("init", "init gestartett");
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setTitle("Aktualisierung");
+            pDialog.setMessage("Daten werden heruntergeladen.");
+            pDialog.setProgressStyle(R.style.AppTheme);
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            while (!Backgrounddownloading.readable) {
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            pDialog.dismiss();
+            Log.d("refresh", "jetzt sollte das refreshing anfangen");
+            publicLighterlist.invalidateViews();
+            fixLighterList.invalidateViews();
+            mobileLighterList.invalidateViews();
+            laserLigterList.invalidateViews();
+            controleList.invalidateViews();
+
+        }
+
+    }
 
 }
 

@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
          android:gravity="center_vertical|center_horizontal"
-         android:text="öffentliche Blitzer"/>
+         android:text="öffentliche Blitzer"
+         android:id="@+id/oeffentlich" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -24,7 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Fest platzierte Blitzer"/>
+            android:text="Fest platzierte Blitzer"
+            android:id="@+id/fix" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -35,7 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
-            android:text="mobile Blitzer"/>
+            android:text="mobile Blitzer"
+            android:id="@+id/mobile" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -46,11 +49,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Lasermessungen"/>
+            android:text="Lasermessungen"
+            android:id="@+id/laser" />
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/laserlighterlist" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Verkehrskontrollen"
+            android:id="@+id/controle" />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/controleList" />
     </LinearLayout>
 </ScrollView>
