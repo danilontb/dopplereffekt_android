@@ -34,6 +34,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.net.ssl.SSLEngineResult;
+
 /*
 TODO GPS adressen checken ist erledigt. Als�chstes w�re checken, warum immer eine neues FIle heruntergeladen wird.
  */
@@ -84,11 +86,14 @@ public class MainActivity extends Activity {
     public static int mPosition;
     public static boolean mNavigationItemClicked;
 
+    //initialisierung des Serviceintents
+    public static Intent serviceGPSIntent = null;                             //Der service intent, wo immer der gleiche aufgerufen bzw gestoppt wird.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Log.d("init", "drawer startet");
 
         //Als aller erster wird  der Drawer gezeichnet damit navigiert werden kann.
@@ -103,11 +108,6 @@ public class MainActivity extends Activity {
         //start service to download data from database
         backgroundservice = new Intent(this, Backgrounddownloading.class);
         startService(backgroundservice);
-
-
-
-
-
     }
 
     public void initialization() {
@@ -121,6 +121,7 @@ public class MainActivity extends Activity {
         oldFiledate = settings.getString("oldFiledate", " ");
         newFiledate = settings.getString("newFiledate", " ");
 
+        serviceGPSIntent = new Intent(this, GPSService.class);
         Log.d("filereader", " newFiledate: " + newFiledate);
         Log.d("filereader", " oldFiledate: " + oldFiledate);
 
@@ -134,23 +135,23 @@ public class MainActivity extends Activity {
                     download();
                     //Toast sind kurzlebige "popups" die gebraucht werden k�nnen um den Benutzer �ber irgendwelche zustands�nderungen oder
                     //Erfolge bzw Misserfolge des Prozesses zu informieren.
-        //            Toast.makeText(this, "Neues File wurde heruntergeladen", Toast.LENGTH_SHORT).show();
-                    Log.d("pdfcheck", "maketoast neues file wurde heruntergeladen");
+            //        Toast.makeText(this, "Neues File wurde heruntergeladen", Toast.LENGTH_SHORT).show();
+                    Log.d("pdfcheck", "Neues File wurde heruntergeladen");
                     if (neuesFile()) {
                         // startActivity(new Intent(this, WriteAdressesInDB.class));
                         Log.d("pdfcheck", "It is a new File. I want to put the Addresses to the public database");
                     } else {
-        //                Toast.makeText(this, "File ist noch immer aktuell", Toast.LENGTH_SHORT).show();
-                        Log.d("pdfcheck", "maketoast File noch immer aktuell");
+            //            Toast.makeText(this, "File ist noch immer aktuell", Toast.LENGTH_SHORT).show();
+                        Log.d("pdfcheck", " File noch immer aktuell");
                     }
                 } else {
                     //sollte das PDF heruntergeladen worden sein, jedoch der Inhalt noch nicht extrahiert werden konnte, wird die
                     //app geschlossen, und man muss sie manuel nochmals starten.
-        //            Toast.makeText(this, "File sind alle auf dem neusten Stand", Toast.LENGTH_SHORT).show();
-                    Log.d("pdfcheck", "maketoast File sind alle auf dem neusten Stand");
+            //        Toast.makeText(this, "File sind alle auf dem neusten Stand", Toast.LENGTH_SHORT).show();
+                    Log.d("pdfcheck", " File sind alle auf dem neusten Stand");
                 }
             } else {
-       //         Toast.makeText(this, "Files sind Inhaltslos. Reparatur in Arbeit.", Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(this, "Files sind Inhaltslos. Reparatur in Arbeit.", Toast.LENGTH_SHORT).show();
                 Log.d("pdfcheck", "maketoast File sind Inhaltslos Reparatur in arbeit");
                 download();
             }
@@ -242,7 +243,6 @@ public class MainActivity extends Activity {
 
         switch (view.getId()) {
             case R.id.btn_position: {
-
                 Log.d("buttonausfragment", "button position gedr�ckt. ");
                 LocationManager service;
                 //Der LocationManager wird ben�tigt, um abzufragen, ob der User das GPS eingeschaltet hat.
@@ -297,11 +297,14 @@ public class MainActivity extends Activity {
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(date);
         newDay = calendar.get(Calendar.DAY_OF_WEEK);
+        writedownloadDay(newDay);
         if (oldDay == newDay) {
             return false;
+        }else{
+            oldDay = newDay;
+            return true;
         }
-        oldDay = newDay;
-        return true;
+
     }
 
     /**
@@ -384,7 +387,7 @@ public class MainActivity extends Activity {
                         if (WarningFragment.serviceLaeuft) {
                             wantRecieveUpdates = false;
                             writeUpdateState(wantRecieveUpdates);
-                            stopService(WarningFragment.serviceIntent);
+                            getApplicationContext().stopService(serviceGPSIntent);
                             WarningFragment.serviceLaeuft = false;
                         }
                         finish();

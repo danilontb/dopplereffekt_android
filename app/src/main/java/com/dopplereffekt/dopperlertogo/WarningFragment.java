@@ -36,6 +36,7 @@ import java.util.List;
  */
 
 
+
 // TODO hacken muss gespeichert werden. ausser man schliesst die app komplett.
 //TODO
 //Diese Klasse schaltet nur das GPS ein, wenn der User entsprechend updates verlangt.
@@ -48,27 +49,25 @@ public class WarningFragment extends Fragment {
     public static boolean serviceLaeuft;
 
     private static final int ENABLE_GPS = 999;                      //Das ist ein Requestcode. Dieser wird gebraucht um startActivityForResult() zu unterscheiden, von wem es kommt.
-    public static Intent serviceIntent = null;                             //Der service intent, wo immer der gleiche aufgerufen bzw gestoppt wird.
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        //init das der service noch nicht läuft
+        //init das der service noch nicht lï¿½uft
         serviceLaeuft = false;
 
         View rootView = inflater.inflate(R.layout.warning_fragment, container, false);
         //Initialisierung der Checkbox und eine Listener wird erstellt, welchen an dieser checkbox "horcht"
         checkInfo = (CheckBox) rootView.findViewById(R.id.checkBoxUpdates);
 
-        //initialisierung des Serviceintents
-        serviceIntent = new Intent(getActivity(), GPSService.class);
 
-        //Der LocationManager wird benötigt, um abzufragen, ob der User das GPS eingeschaltet hat.
+
+        //Der LocationManager wird benï¿½tigt, um abzufragen, ob der User das GPS eingeschaltet hat.
         service = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         isGPSEnabled = service.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-        //Aus dem Internen File wird gelesen, ob der User informationen erhalten möchte. Dieser status wird dann in die checkbox übertragen.
+        //Aus dem Internen File wird gelesen, ob der User informationen erhalten mï¿½chte. Dieser status wird dann in die checkbox ï¿½bertragen.
         SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
         wantsUpdates = settings.getBoolean("Updates", false);
         checkInfo.setChecked(wantsUpdates);
@@ -76,19 +75,19 @@ public class WarningFragment extends Fragment {
 
         checkInfo.setOnClickListener(new View.OnClickListener() {
 
-            //Diese Methode "onCLick" wird aufgerufen sobald sich der Zustand der Checkbox ändert.
+            //Diese Methode "onCLick" wird aufgerufen sobald sich der Zustand der Checkbox ï¿½ndert.
             @Override
             public void onClick(View v) {
+
                 LocationManager service = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                 isGPSEnabled = service.isProviderEnabled(LocationManager.GPS_PROVIDER);
                 if (checkInfo.isChecked()) {
 
                     if (isGPSEnabled) {
-
-                                wantsUpdates = true;
+                        wantsUpdates = true;
                         writeUpdateState(wantsUpdates);
                         checkInfo.setChecked(wantsUpdates);
-                        getActivity().startService(serviceIntent);
+                        getActivity().getApplicationContext().startService(MainActivity.serviceGPSIntent);
                         serviceLaeuft = true;
 
                     } else {
@@ -98,7 +97,8 @@ public class WarningFragment extends Fragment {
 
                     }
                 } else {
-                    getActivity().stopService(serviceIntent);
+                    Log.d("stopservice", "stop service mÃ¼sst nun aufgerufen worden sein");
+                    getActivity().getApplicationContext().stopService(MainActivity.serviceGPSIntent);
                     writeUpdateState(false);
                     Toast.makeText(getActivity(), R.string.gps_is_turning_off, Toast.LENGTH_SHORT).show();
                     wantsUpdates = false;
@@ -115,7 +115,7 @@ public class WarningFragment extends Fragment {
 
 
 
-    //mit dieser Methode wird gespeichert ob, der User informiert werden möchte oder nicht.
+    //mit dieser Methode wird gespeichert ob, der User informiert werden mï¿½chte oder nicht.
     public void writeUpdateState(boolean state) {
         SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();

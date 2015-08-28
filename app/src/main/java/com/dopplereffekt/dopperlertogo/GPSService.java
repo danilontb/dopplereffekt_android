@@ -193,12 +193,13 @@ public class GPSService extends Service {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         Log.d("serviceTest", "onDestroy wurde aufgerufen");
         //Diese Methode .removeUpdates() zerstért den LocationListener Thread
         if (myLocationlistener != null) {
             locationManager.removeUpdates(myLocationlistener);
             Log.d("thread", "locatin listenet wurde geloescht");
         }
-        super.onDestroy();
+
     }
 }

@@ -1,30 +1,22 @@
 package com.dopplereffekt.dopperlertogo;
 
-
 import android.app.Service;
 import android.content.Intent;
-
 import android.location.Geocoder;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-;
 
 /**
  * Created by dsantagata on 11.06.2015.
