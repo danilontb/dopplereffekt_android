@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -23,18 +24,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
-
-import javax.net.ssl.SSLEngineResult;
 
 /*
 TODO GPS adressen checken ist erledigt. Als�chstes w�re checken, warum immer eine neues FIle heruntergeladen wird.
@@ -50,6 +45,7 @@ public class MainActivity extends Activity {
     public static String pdfname = "publicLighter";
     public static String pdfurl = "http://www.kapo.sg.ch/home/informationen/verkehr/_jcr_content/Par/downloadlist_0/DownloadListPar/download.ocFile/2014%2012%2017_Semistation%C3%A4re%20Messanlagen.pdf";
 
+
     int newDay = 0;       //Wird in internen Files gespeichert
     int oldDay = 0;       //Wird in internen Files gespeichert
     String oldFiledate = null; //Bei oldFiledate und newFiledate handelt es sich effektiv um das Datum auf dem PDF. Anhand vom aush�ndigungsdatum des File wird entschieden, ob  (n�chste zeile))
@@ -64,7 +60,6 @@ public class MainActivity extends Activity {
     String[] lighterOptions = {"fixLighter", "mobileLighter", "laserLighter", "controlePosition"};
 
     public static Intent backgroundservice = null;
-
     // public static boolean serviceLauft = false;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -108,6 +103,13 @@ public class MainActivity extends Activity {
         //start service to download data from database
         backgroundservice = new Intent(this, Backgrounddownloading.class);
         startService(backgroundservice);
+
+
+
+
+
+
+
     }
 
     public void initialization() {
@@ -159,6 +161,8 @@ public class MainActivity extends Activity {
             Log.d("PDF", "pdf existierte noch nicht.");
             download();
         }
+
+
     }
 
     private void createDrawer(Bundle savedInstanceState) {
@@ -520,13 +524,14 @@ public class MainActivity extends Activity {
         editor.commit();
     }
 
+
+
     @Override
     protected void onDestroy() {
 
         Log.d("activity", "im onDestroy");
         writeUpdateState(false);
         writedownloadDay(newDay);
-        stopService(backgroundservice);
         super.onDestroy();
     }
 
@@ -582,32 +587,32 @@ public class MainActivity extends Activity {
          * �ber die innere Klasse kann ich nicht viel sagen. Sie wird ben�tigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgef�hrt.
          */
         private class initialism extends AsyncTask<String, Void, Void> {
-            /*    @Override
-              protected void onPreExecute() {
-                   super.onPreExecute();
-                   Log.d("init", "init gestartett");
-                   pDialog = new ProgressDialog(MainActivity.this);
-                   pDialog.setTitle("Initialisierung");
-                   pDialog.setMessage("Daten werden vorbereitet.");
-                   pDialog.setProgressStyle(R.style.AppTheme);
-                   pDialog.setIndeterminate(false);
-                   pDialog.setCancelable(true);
-                   pDialog.show();
-               }
-       */
             @Override
-            protected Void doInBackground(String... strings) {
+          protected void onPreExecute() {
+               super.onPreExecute();
+               Log.d("init", "init gestartett");
+               pDialog = new ProgressDialog(MainActivity.this);
+               pDialog.setTitle("Initialisierung");
+               pDialog.setMessage("Daten werden vorbereitet.");
+               pDialog.setProgressStyle(R.style.AppTheme);
+               pDialog.setIndeterminate(false);
+               pDialog.setCancelable(true);
+               pDialog.show();
+           }
+
+        @Override
+        protected Void doInBackground(String... strings) {
 
 
-                initialization();
-                return null;
+        initialization();
+               return null;
             }
 
- /*       @Override
+        @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             pDialog.dismiss();
         }
-   */
+
     }
 }

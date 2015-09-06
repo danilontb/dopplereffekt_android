@@ -153,9 +153,9 @@ public class showLighterMapFragment extends Fragment {
         return rootView;
     }
 
-    //diese Methode löst die Adresse (PLZ + Strasse) nach ihren Längengrad auf.
-    //Imfalle wenn die Adresse nicht aufgelöst werden kann oder die übergebene
-    //Adresse sei null, wird einfach nicht gemacht und mit der nächsten probiert...Ist nicht professionell aber naja:)
+    //diese Methode lst die Adresse (PLZ + Strasse) nach ihren Lngengrad auf.
+    //Imfalle wenn die Adresse nicht aufgelst werden kann oder die bergebene
+    //Adresse sei null, wird einfach nicht gemacht und mit der nchsten probiert...Ist nicht professionell aber naja:)
     private Location convertAddressToCoor(String adress) {
         Location lc = new Location("point A");
         Geocoder coder = new Geocoder(getActivity());
@@ -209,7 +209,7 @@ public class showLighterMapFragment extends Fragment {
         Fragment fragment = null;
 
         // Handle presses on the action bar items
-        Log.d("actionbutton", "karte wurde gedrückt.");
+        Log.d("actionbutton", "karte wurde gedrï¿½ckt.");
         switch (item.getItemId()) {
             case R.id.action_listbutton:
                 fragment = new showLighterListFragment();

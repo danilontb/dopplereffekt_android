@@ -1,21 +1,11 @@
-
 <?php
 
-//header('Content-type:application/json');
+header('Content-type:application/json');
 
-
-
-if (isset($_GET['databasename'])){
- 
-    
-    $databasename = $_GET['databasename'];
-    
-   
- try {
+try {
     $pdo=new PDO("mysql:dbname=stuxnet_doppler;host=localhost",'stuxnet_doppler','tabasco');
 
-
-        $statement=$pdo->prepare("SELECT * FROM ".$databasename);
+    $statement=$pdo->prepare("SELECT * FROM user");
     $statement->execute();
     $results=$statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -26,6 +16,4 @@ if (isset($_GET['databasename'])){
 catch (PDOException $e){
     echo "Problem : ". $e->getMessage();
 }
-}
-
 ?>

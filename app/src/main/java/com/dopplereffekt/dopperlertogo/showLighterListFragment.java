@@ -54,10 +54,7 @@ public class showLighterListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.showlighterlist_fragment, container, false);
-
-
         setHasOptionsMenu(true);
-
 
         publicLighterlist = (ListView) rootView.findViewById(R.id.publiclighterlist);
         fixLighterList = (ListView) rootView.findViewById(R.id.fixlighterlist);
@@ -158,7 +155,7 @@ public class showLighterListFragment extends Fragment {
         Fragment fragment = null;
 
         // Handle presses on the action bar items
-        Log.d("actionbutton", "karte wurde gedrückt.");
+        Log.d("actionbutton", "karte wurde gedrï¿½ckt.");
         switch (item.getItemId()) {
             case R.id.action_mapbutton:
                 fragment = new showLighterMapFragment();
@@ -177,7 +174,7 @@ public class showLighterListFragment extends Fragment {
 
 
     /**
-     * über die innere Klasse kann ich nicht viel sagen. Sie wird benötigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgeführt.
+     * ï¿½ber die innere Klasse kann ich nicht viel sagen. Sie wird benï¿½tigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgefï¿½hrt.
      */
     private class waiting extends AsyncTask<String, Void, Void> {
         @Override
