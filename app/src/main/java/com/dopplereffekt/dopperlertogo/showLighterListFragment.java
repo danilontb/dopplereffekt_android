@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,20 +48,33 @@ public class showLighterListFragment extends Fragment {
     // products JSONArray
     JSONArray products = null;
 
-
-    String downloadwebsite = "http://dopplereffekt.freehostingking.com/readfromdatabase.php";
+    public static List testAdresse;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
 
+        Log.d("fragment", "fragement onCreateView");
+
+        Log.d("fragment", "Size of List : " + Backgrounddownloading.fixLighterAdresse.size() + " : " + Backgrounddownloading.mobileLighterAdresse.size() + " : " + Backgrounddownloading.laserLighterAdresse.size()
+         + " : " + Backgrounddownloading.controlePositionAdresse.size());
+
+
         View rootView = inflater.inflate(R.layout.showlighterlist_fragment, container, false);
         setHasOptionsMenu(true);
+
+        testAdresse = new ArrayList();
+        testAdresse.add("try it");
+        testAdresse.add("danilo");
+        testAdresse.add("vanessa");
+        testAdresse.add("valeria");
+        testAdresse.add("Genna");
 
         publicLighterlist = (ListView) rootView.findViewById(R.id.publiclighterlist);
         fixLighterList = (ListView) rootView.findViewById(R.id.fixlighterlist);
         mobileLighterList = (ListView) rootView.findViewById(R.id.mobilelighterlist);
         laserLigterList = (ListView) rootView.findViewById(R.id.laserlighterlist);
         controleList = (ListView) rootView.findViewById(R.id.controleList);
+
 
         publicLighterlist.requestLayout();
         fixLighterList.requestLayout();
@@ -82,6 +96,8 @@ public class showLighterListFragment extends Fragment {
 
         controleList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.controlePositionAdresse));
         controleList.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
+
+
 
         return rootView;
     }

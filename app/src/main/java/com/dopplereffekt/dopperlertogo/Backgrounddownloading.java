@@ -1,53 +1,18 @@
 package com.dopplereffekt.dopperlertogo;
-
-import android.app.Activity;
-import android.app.DownloadManager;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Geocoder;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-
-import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
-
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-
-import org.apache.http.ProtocolException;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-
-import org.apache.http.params.CoreProtocolPNames;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,9 +40,7 @@ public class Backgrounddownloading extends Service {
     JSONArray products = null;
 
     int aktualisierungszyklus = 1000 * 15 * 60;    //immer in ms angeben 3600000ms = 1h
-    public static String downloadwebsite = "http://dopplereffekt.freehostingking.com/readfromdatabase.php";
-    public static String downloadwebsite2 = "http://dopplereffekt.freehostingking.com/readfromdatabase2.php";
-    String getNumberOfEntity = "http://dopplereffekt.freehostingking.com/getnumberofentity.php";
+    public static String downloadwebsite = "http://stuxnet.bplaced.net/readfromdatabase.php?databasename=";
     List<android.location.Address> addresses;
     String[] lighterOptions = {"fixLighter", "mobileLighter", "laserLighter", "controlePosition"};
     public static boolean readable = false;
@@ -98,6 +61,7 @@ public class Backgrounddownloading extends Service {
     @Override
     public void onCreate() {
 
+        Log.d("thread", "im theread eingestiegen.");
         fixLighterAdresse = new ArrayList();
         mobileLighterAdresse = new ArrayList();
         laserLighterAdresse = new ArrayList();
@@ -113,16 +77,18 @@ public class Backgrounddownloading extends Service {
         laserLighterlat = new ArrayList();
         controlePositionlat = new ArrayList();
 
+        clearAllLists();
 
 
         Log.d("Backgrounddownloading", "onCreate");
         int delay = 0; // delay for 0 sec.
-        int period = 1000 * 60; // repeat every 10 sec.
+        int period = 1000 * 60 * 2; // repeat every 10 sec.
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                Log.d("Backgrounddownloading", "run läuft " + i);
+                Log.d("thread", "run läuft " + i);
                 // readInformation();
+
                 new backgroundjsondownload().execute();
 
                 i++;
@@ -151,6 +117,45 @@ public class Backgrounddownloading extends Service {
         controlePositionlat.clear();
     }
 
+    public void clearExpliciteList(String listName){
+        switch (listName)
+        {
+            case "fixLighter":
+            {
+                fixLighterAdresse.clear();
+                fixLighterlat.clear();
+                fixLighterlng.clear();
+            }
+            break;
+            case "mobileLighter":
+            {
+                mobileLighterAdresse.clear();
+                mobileLighterlat.clear();
+                mobileLighterlng.clear();
+            }
+            break;
+            case "laserLighter":
+            {
+                laserLighterAdresse.clear();
+                laserLighterlat.clear();
+                laserLighterlng.clear();
+            }
+            break;
+            case "controlePosition":
+            {
+                controlePositionAdresse.clear();
+                controlePositionlat.clear();
+                controlePositionlng.clear();
+            }
+            break;
+            default:
+            {
+                Log.d("clearList", "Position konnte nicht gelöscht werden");
+            }
+            break;
+        }
+    }
+
     private void readInformation() {
         double lat;
         double lng;
@@ -174,6 +179,7 @@ public class Backgrounddownloading extends Service {
 
                         Geocoder geo = new Geocoder(getApplicationContext(), Locale.getDefault());
                         addresses = geo.getFromLocation(lat, lng, 1);
+
 
 
                         if (addresses.get(0).getLocality() == null) {
@@ -255,41 +261,107 @@ public class Backgrounddownloading extends Service {
 
         @Override
         protected Void doInBackground(String... strings) {
+            readable = false;
             JSONArray jsonArray = null;
-            String url = "http://stuxnet.bplaced.net/readfromdatabase.php?databasename=fixLighter";
             JSONObject helpingObject = null;
-            jsonArray = JSONParser.getJson(url);
+            String url = "";
             String comment = "";
             double lat;
             double lng;
 
-            if (jsonArray != null) {
-                Log.d("async", "ja es gibt ein json : " + jsonArray.length());
-                for (int i = 0; i<jsonArray.length(); i++)
-                {
-                    try {
-                        helpingObject = jsonArray.getJSONObject(i);
-                        lat = new Double(helpingObject.getString("latitude"));
-                        lng = new Double(helpingObject.getString("longitude"));
-                        comment = helpingObject.getString("comment");
+            for(int i=0; i<lighterOptions.length; i++)
+            {
+                url = downloadwebsite + lighterOptions[i];
+                jsonArray = JSONParser.getJson(url);
+                Log.d("framgen", "URL : " + url);
+
+                clearExpliciteList(lighterOptions[i]);
+
+                Log.d("Jsontest", "Kurz vor der Listeentscheidung mit dem Blitzer : " + lighterOptions[i]);
+
+                if (jsonArray != null) {
+                    Log.d("Jsontest", "ja es gibt ein json : " + jsonArray.length()  + " : " +  lighterOptions[i]);
+                    for (int j = 0; j < jsonArray.length(); j++) {
+                        try {
+                            helpingObject = jsonArray.getJSONObject(j);
+                            lat = new Double(helpingObject.getString("latitude"));
+                            lng = new Double(helpingObject.getString("longitude"));
+                            comment = helpingObject.getString("comment");
 
 
-                        Geocoder geo = new Geocoder(getApplicationContext(), Locale.getDefault());
-                        addresses = geo.getFromLocation(lat, lng, 1);
+                            Geocoder geo = new Geocoder(getApplicationContext(), Locale.getDefault());
+                            addresses = geo.getFromLocation(lat, lng, 1);
 
-                        Log.d("address", addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                        Log.d("address", lat + " : " + lng + " -->  " + comment);
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }catch (JSONException j){
-                        
-                        j.printStackTrace();
+                            Log.d("listcheck", "es wird was in die liste geschrieben mit dem switch : " + lighterOptions[i]);
+
+                            if (addresses.get(0).getLocality() == null) {
+                                switch (lighterOptions[i]) {
+                                    case "fixLighter": {
+                                        fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        fixLighterlat.add(lat);
+                                        fixLighterlng.add(lng);
+                                    }
+                                    break;
+                                    case "mobileLighter": {
+
+                                        mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        mobileLighterlat.add(lat);
+                                        mobileLighterlng.add(lng);
+                                    }
+                                    break;
+                                    case "laserLighter": {
+                                        laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        laserLighterlat.add(lat);
+                                        laserLighterlng.add(lng);
+                                    }
+                                    break;
+                                    case "controlePosition": {
+                                        controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        controlePositionlat.add(lat);
+                                        controlePositionlng.add(lng);
+                                    }
+                                    break;
+                                }
+                            } else if (addresses.get(0).getSubLocality() == null) {
+                                Log.d("outputgeo", addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+
+
+                                switch (lighterOptions[i]) {
+                                    case "fixLighter": {
+                                        fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                    }
+                                    break;
+                                    case "mobileLighter": {
+                                        mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                    }
+                                    break;
+                                    case "laserLighter": {
+                                        laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                    }
+                                    break;
+                                    case "controlePosition": {
+                                        controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                    }
+                                    break;
+                                }
+                            } else {
+                                Log.d("problem", "die adresse war leer und wird somit abgebrochen");
+                            }
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Log.e("jsonfehler", "etwas ging schief mit " + lighterOptions[i] + " " + e.toString());
+                        } catch (JSONException k) {
+                            k.printStackTrace();
+                            Log.e("jsonfehler", "etwas ging schief mit " + lighterOptions[i] + " " + k.toString());
+                        }
                     }
-                }
 
-            }else{
-                Log.d("async", "nein json ist leer");
+                } else {
+                    Log.d("Jsontest", "nein json ist leer");
+                }
             }
+            readable = true;
                         return null;
         }
 
