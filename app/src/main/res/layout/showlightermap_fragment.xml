@@ -3,21 +3,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/eventSpinnerMap"
+        android:entries="@array/map_selectable_elements"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:layout_below="@+id/spinner2">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Was geht ihr bitches"
-            android:id="@+id/textView3" />
+
 
         <com.google.android.gms.maps.MapView android:id="@+id/lightershowmap"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="461dp" />
 
     </LinearLayout>
 

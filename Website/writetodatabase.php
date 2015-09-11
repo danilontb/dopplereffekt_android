@@ -11,12 +11,11 @@ $response = array();
 
             
 // check for required fields
-/*
+
 if (isset($_POST['longitude']) && isset($_POST['latitude'])&& isset($_POST['comment'])&& isset($_POST['time'])&& isset($_POST['date'])&& isset($_POST['eventoption'])){
-    */
+    
  
-if($_POST)
-{
+
     $eventoption    = $_POST['eventoption'];
     $longitude      = $_POST['longitude'];
     $latitude       = $_POST['latitude'];

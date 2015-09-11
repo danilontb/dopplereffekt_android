@@ -11,6 +11,16 @@
         <item>About us</item>
     </string-array>
 
+
+    <string-array name="map_selectable_elements">
+        <item>offizielle Blitzer</item>
+        <item>Fest instllierte Blitzer</item>
+        <item>Mobile Blitzer</item>
+        <item>Lasermessungen</item>
+        <item>Verkehrskontrollen</item>
+        <item>sonstige ereignisse</item>
+    </string-array>
+
     <!-- Nav Drawer List Item Icons -->
     <!-- Keep them in order as the titles are in -->
     <array name="nav_drawer_icons">

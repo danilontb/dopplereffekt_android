@@ -19,6 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,76 +41,30 @@ import java.util.List;
  */
 public class showLighterMapFragment extends Fragment {
 
-    String datefile = "DateFile";
-
     GoogleMap googleMap;
     MapView mMapView;
 
     int anzOffizielleBlitzer = ConvertPDF.pdf2AdressArray().length;
-    String [] adressen = null;
+    String[] adressen = null;
     Location[] orte = new Location[anzOffizielleBlitzer];
 
-    Location loca   = null;
-    int minutes     = 100;
-    int oldminutes  = 100;
-    int hour        = 100;
-    int oldhour     = 100;
-    int day         = 100;
-    int oldday      = 100;
+    Location loca = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(adressen==null){
-            adressen = ConvertPDF.pdf2AdressStringForAPI();
-            Log.d("adressenarray", "adressenarry war leer");
-        }else{
-            Log.d("adressenarray", "adressenarry war nicht leer");
-        }
-
-
-        loadPrefrences();
-        loadActualTime();
-
-        for(int i = 0; i<anzOffizielleBlitzer; i++){
-            orte[i] = convertAddressToCoor(adressen[i]);
-        }
-
-        for(Location loca : orte){
-            Log.d("versuch" ,loca.getLatitude() + " " + loca.getLongitude());
-        }
-
-
-        if((minutes < (oldminutes+15))&&(hour == oldhour)&&(day == oldday)&&(orte!=null)){
-            //lade nichts neues runter
-        }else {
-            //lade daten neu
-            oldminutes  = minutes;
-            oldday      = day;
-            oldhour     = hour;
-
-        }
-
-
+            if(adressen==null)
+            {
+                adressen = ConvertPDF.pdf2AdressStringForAPI();
+            }
+            //im falle das die offiziellen Blitzer angezeigt werden müssen, sind sie schon heruntergeladen.
+            for (int i = 0; i < anzOffizielleBlitzer; i++) {
+                orte[i] = convertAddressToCoor(adressen[i]);
+            }
 
     }
 
-    private void loadPrefrences(){
-        SharedPreferences settings = this.getActivity().getSharedPreferences(datefile, Context.MODE_PRIVATE);
-        oldday      = settings.getInt("day", 0);
-        oldhour     = settings.getInt("hour", 0);
-        oldminutes  = settings.getInt("minutes", 0);
-
-
-    }
-
-    private void loadActualTime(){
-        Calendar calendar = GregorianCalendar.getInstance();
-        minutes = calendar.get(Calendar.MINUTE);
-        hour    = calendar.get(Calendar.HOUR_OF_DAY);
-        day     = calendar.get(Calendar.DAY_OF_YEAR);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -117,7 +73,22 @@ public class showLighterMapFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.showlightermap_fragment, container, false);
 
-        Log.d("adressenarray" ,"fettig");
+
+        //dieser Spinner sagt welche Icons gezeigt werden müssen.
+        Spinner spinner = (Spinner) rootView.findViewById(R.id.eventSpinnerMap);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                Object item = parent.getItemAtPosition(pos);
+                Log.d("mapfragment", item.toString());
+                googleMap.clear();
+                new LoadingLighterPosition().execute(item.toString());
+            }
+
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        Log.d("adressenarray", "fettig");
         mMapView = (MapView) rootView.findViewById(R.id.lightershowmap);
         mMapView.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -189,13 +160,6 @@ public class showLighterMapFragment extends Fragment {
         return lc;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        new  LoadingLighterPosition().execute();
-    }
-
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -226,19 +190,21 @@ public class showLighterMapFragment extends Fragment {
         return true;
     }
 
+
     /**
-    * Background Async Task to Create new product
-    * */
+     * Background Async Task to Draw Marker on a Map
+     */
     class LoadingLighterPosition extends AsyncTask<String, MarkerOptions, String> {
 
         ProgressDialog pDialog;
+
         /**
          * Before starting background thread Show Progress Dialog
-         * */
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-             pDialog = new ProgressDialog(getActivity());
+            pDialog = new ProgressDialog(getActivity());
             pDialog.setMessage("Aktuelle Standorte werden geladen...");
             pDialog.setTitle("Datenbank download");
             pDialog.setIndeterminate(false);
@@ -246,12 +212,7 @@ public class showLighterMapFragment extends Fragment {
             pDialog.show();
         }
 
-
-        /**
-         * Read positions
-         * */
-        protected String doInBackground(String... args)
-        {
+        public void drawMarkerOfficial() {
             int i = 0;
             for (String adress : ConvertPDF.pdf2AdressStringForAPI()) {
 
@@ -265,32 +226,113 @@ public class showLighterMapFragment extends Fragment {
                     MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng(loca.getLatitude(), loca.getLongitude())).title(ConvertPDF.pdf2AdressArray()[i]);
                     // Changing marker icon
                     thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-           //         googleMap.addMarker(thessaloniki);
+                    //         googleMap.addMarker(thessaloniki);
                     publishProgress(thessaloniki);
-                } else {
-                    //Toast.makeText(getActivity(), "Koordinaten sind leer", Toast.LENGTH_SHORT).show();
                 }
                 i++;
             }
-
-            return null;
         }
 
-        @Override
-        protected void onProgressUpdate(MarkerOptions... values) {
-            googleMap.addMarker(values[0]);
+        public void drawOtherMarker(String lighter) {
+            switch (lighter) {
+                case "fixLighter": {
+                    for (int i = 0; i < Backgrounddownloading.fixLighterAdresse.size(); i++) {
+
+                        // create marker
+                        MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.fixLighterlat.get(i),
+                                (Double)Backgrounddownloading.fixLighterlng.get(i))).title((String)Backgrounddownloading.fixLighterAdresse.get(i));
+                        // Changing marker icon
+                        thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                        //         googleMap.addMarker(thessaloniki);
+                        publishProgress(thessaloniki);
+
+                    }
+                }break;
+                case "mobileLighter": {
+                    for (int i = 0; i < Backgrounddownloading.mobileLighterAdresse.size(); i++) {
+                        // create marker
+                        MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.mobileLighterlat.get(i),
+                                (Double)Backgrounddownloading.mobileLighterlng.get(i))).title((String)Backgrounddownloading.mobileLighterAdresse.get(i));
+                        // Changing marker icon
+                        thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        //         googleMap.addMarker(thessaloniki);
+                        publishProgress(thessaloniki);
+                    }
+                }break;
+                case "laserLighter": {
+                        for (int i = 0; i < Backgrounddownloading.laserLighterAdresse.size(); i++) {
+                            // create marker
+                            MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.laserLighterlat.get(i),
+                                    (Double)Backgrounddownloading.laserLighterlng.get(i))).title((String)Backgrounddownloading.laserLighterAdresse.get(i));
+                            // Changing marker icon
+                            thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                            //         googleMap.addMarker(thessaloniki);
+                            publishProgress(thessaloniki);
+                    }
+                }break;
+                case "controlPosition": {
+                    for (int i = 0; i < Backgrounddownloading.controlePositionAdresse.size(); i++) {
+                        // create marker
+                        MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.controlePositionlat.get(i),
+                                (Double)Backgrounddownloading.controlePositionlng.get(i))).title((String)Backgrounddownloading.controlePositionAdresse.get(i));
+                        // Changing marker icon
+                        thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        //         googleMap.addMarker(thessaloniki);
+                        publishProgress(thessaloniki);
+                    }
+                }break;
+            }
+
         }
 
         /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(String file_url) {
+         * Read positions
+         */
+        protected String doInBackground(String... args) {
 
+            if (args.length > 0) {
+                switch (args[0]) {
+                    case "offizielle Blitzer": {
+                        drawMarkerOfficial();
+                    }
+                    break;
+                    case "Fest instllierte Blitzer": {
+                        Log.d("maptest", "bin im switch");
+                        drawOtherMarker("fixLighter");
+                    }
+                    break;
+                    case "Mobile Blitzer": {
+                        drawOtherMarker("mobileLighter");
+                    }
+                    break;
+                    case "Lasermessungen": {
+                        Log.d("maptest", "bin im switch");
+                        drawOtherMarker("laserLighter");
+                    }
+                    break;
+                    case "Verkehrskontrollen" :{
+                        drawOtherMarker("controlPosition");
+                    }
 
-            // dismiss the dialog once done
-            pDialog.dismiss();
-
-        }
+                }
+            }
+        return null;
 
     }
+
+    @Override
+    protected void onProgressUpdate(MarkerOptions... values) {
+        googleMap.addMarker(values[0]);
+    }
+
+    /**
+     * After completing background task Dismiss the progress dialog
+     **/
+    protected void onPostExecute(String file_url) {
+        // dismiss the dialog once done
+        pDialog.dismiss();
+
+    }
+
+}
 }

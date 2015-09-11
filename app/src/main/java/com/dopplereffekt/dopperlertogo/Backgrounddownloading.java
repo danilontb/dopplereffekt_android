@@ -274,14 +274,10 @@ public class Backgrounddownloading extends Service {
             {
                 url = downloadwebsite + lighterOptions[i];
                 jsonArray = JSONParser.getJson(url);
-                Log.d("framgen", "URL : " + url);
 
                 clearExpliciteList(lighterOptions[i]);
 
-                Log.d("Jsontest", "Kurz vor der Listeentscheidung mit dem Blitzer : " + lighterOptions[i]);
-
                 if (jsonArray != null) {
-                    Log.d("Jsontest", "ja es gibt ein json : " + jsonArray.length()  + " : " +  lighterOptions[i]);
                     for (int j = 0; j < jsonArray.length(); j++) {
                         try {
                             helpingObject = jsonArray.getJSONObject(j);
@@ -298,50 +294,58 @@ public class Backgrounddownloading extends Service {
                             if (addresses.get(0).getLocality() == null) {
                                 switch (lighterOptions[i]) {
                                     case "fixLighter": {
-                                        fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
                                         fixLighterlat.add(lat);
                                         fixLighterlng.add(lng);
                                     }
                                     break;
                                     case "radarfallen": {
 
-                                        mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
                                         mobileLighterlat.add(lat);
                                         mobileLighterlng.add(lng);
                                     }
                                     break;
                                     case "laserLighter": {
-                                        laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
                                         laserLighterlat.add(lat);
                                         laserLighterlng.add(lng);
                                     }
                                     break;
                                     case "controlePosition": {
-                                        controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
                                         controlePositionlat.add(lat);
                                         controlePositionlng.add(lng);
                                     }
                                     break;
                                 }
                             } else if (addresses.get(0).getSubLocality() == null) {
-                                Log.d("outputgeo", addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                Log.d("outputgeo", addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
 
 
                                 switch (lighterOptions[i]) {
                                     case "fixLighter": {
-                                        fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        fixLighterlat.add(lat);
+                                        fixLighterlng.add(lng);
                                     }
                                     break;
                                     case "radarfallen": {
-                                        mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        mobileLighterlat.add(lat);
+                                        mobileLighterlng.add(lng);
                                     }
                                     break;
                                     case "laserLighter": {
-                                        laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        laserLighterlat.add(lat);
+                                        laserLighterlng.add(lng);
                                     }
                                     break;
                                     case "controlePosition": {
-                                        controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
+                                        controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        controlePositionlat.add(lat);
+                                        controlePositionlng.add(lng);
                                     }
                                     break;
                                 }
