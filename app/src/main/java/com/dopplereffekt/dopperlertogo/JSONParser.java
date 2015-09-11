@@ -53,7 +53,7 @@ public class JSONParser {
 
     //methode nicht mehr aufrufen...sie hat aber mal funktioniert. Klassen werden nicht mehr unterstützt.
     //Besser alls HttpClient wird nun in der unteren Methode HttpUrlConnection verwendet.
-    public JSONObject makeHttpRequest(String url, String method,
+    public static JSONObject makeHttpRequest(String url, String method,
                                       List<NameValuePair> params) {
 
         // Making HTTP request

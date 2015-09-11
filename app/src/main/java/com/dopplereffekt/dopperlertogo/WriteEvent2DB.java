@@ -2,13 +2,11 @@ package com.dopplereffekt.dopperlertogo;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
-
+import java.io.OutputStreamWriter;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -17,13 +15,29 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.BufferedWriter;
+import java.io.OutputStream;
 import java.io.IOException;
-import java.sql.Date;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by dsantagata on 07.06.2015.
@@ -32,15 +46,13 @@ public class WriteEvent2DB extends Activity {
 
     private ProgressDialog pDialog;
 
-    String eventoption      = null;
-    String eventlongitude   = null;
-    String eventlatitude    = null;
-    String eventcomment     = null;
-    String eventminutes     = null;
-    String eventhour        = null;
-    String eventday         = null;
-    String eventmonth       = null;
-    String website          = "http://dopplereffekt.freehostingking.com/writetodatabase.php";
+    String eventoption = null;
+    String eventlongitude = null;
+    String eventlatitude = null;
+    String eventcomment = null;
+    String eventtime = null;
+    String eventdate = null;
+    String website = "http://stuxnet.bplaced.net/writetodatabase.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,17 +63,20 @@ public class WriteEvent2DB extends Activity {
         Log.d("website", "extras erhalten");
 
         Calendar calendar = GregorianCalendar.getInstance();
-        eventday = calendar.get(Calendar.DAY_OF_YEAR) + "";
-        eventminutes = calendar.get(Calendar.MINUTE)+ "";
-        eventmonth = calendar.get(Calendar.MONTH)+ "";
-        eventhour = calendar.get(Calendar.HOUR_OF_DAY)+ "";
+        if (calendar.get(Calendar.MINUTE) < 10) {
+            eventtime = calendar.get(Calendar.HOUR) + ":0" + calendar.get(Calendar.MINUTE);
+        } else {
+            eventtime = calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE);
+        }
+
+        eventdate = calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
 
         eventoption = extras.getString("eventoption");
         eventlongitude = extras.getString("eventlongitude");
         eventlatitude = extras.getString("eventlatitude");
         eventcomment = extras.getString("eventcomment");
 
-        Log.d("showittome", eventlongitude + " : " + eventlatitude + " um das gehts bitches" );
+        Log.d("showittome", eventlongitude + " : " + eventlatitude + " um das gehts bitches");
 
         Log.d("website", "eventoption :" + eventoption);
         Log.d("website", "eventlng :" + eventlongitude);
@@ -70,19 +85,19 @@ public class WriteEvent2DB extends Activity {
 
         switch (extras.getString("eventoption")) {
             case "Fester Blitzer": {
-                eventoption = "fixlighter";
+                eventoption = "fixLighter";
             }
             break;
             case "Mobiler Blitzer": {
-                eventoption = "mobilelighter";
+                eventoption = "LighterMobile";
             }
             break;
             case "Laser am Strassenrand": {
-                eventoption = "laserlighter";
+                eventoption = "laserLighter";
             }
             break;
             case "Verkehrskontrolle": {
-                eventoption = "controlposition";
+                eventoption = "controlPosition";
             }
             break;
             default: {
@@ -92,18 +107,37 @@ public class WriteEvent2DB extends Activity {
         }
 
 
-
-        if((eventlatitude==null) && (eventlongitude==null)){
+        if ((eventlatitude == null) || (eventlongitude == null)) {
             Toast.makeText(this, "Dein GPS modul ist noch nicht bereit", Toast.LENGTH_SHORT).show();
-
-        }else {
+        } else {
             new WriteNewEvent2DB().execute();
             setContentView(R.layout.lighterwhilewriting);
         }
 
-finish();
-     // startActivity(new Intent(this, MainActivity.class));
+        finish();
+        // startActivity(new Intent(this, MainActivity.class));
     }
+
+    private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+
+        for (NameValuePair pair : params)
+        {
+            if (first) {
+                first = false;
+            }else {
+                result.append("&");
+            }
+
+            result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+        }
+
+        return result.toString();
+    }
+
 
     /**
      * Background Async Task to Create new product
@@ -129,36 +163,107 @@ finish();
          */
         protected String doInBackground(String... args) {
             // Create a new HttpClien t and Post Header
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost(website);
+            HttpURLConnection connection;
+            OutputStreamWriter request = null;
+            URL url = null;
+            String response = null;
+            String parameters = "";
 
-            try {
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            nameValuePairs.add(new BasicNameValuePair("longitude", eventlongitude));
+            nameValuePairs.add(new BasicNameValuePair("latitude", eventlatitude));
+            nameValuePairs.add(new BasicNameValuePair("comment", eventcomment));
+            nameValuePairs.add(new BasicNameValuePair("time", eventtime));
+            nameValuePairs.add(new BasicNameValuePair("date", eventdate));
+            nameValuePairs.add(new BasicNameValuePair("eventoption", eventoption));
+
+
+            try
+            {
+                url = new URL(website);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestMethod("POST");
+
+                request = new OutputStreamWriter(connection.getOutputStream());
+
+
+                parameters = getQuery(nameValuePairs);
+
+                Log.d("website parameters : " , parameters);
+                request.write(parameters);
+                request.flush();
+                request.close();
+                String line = "";
+                InputStreamReader isr = new InputStreamReader(connection.getInputStream());
+                BufferedReader reader = new BufferedReader(isr);
+                StringBuilder sb = new StringBuilder();
+                while ((line = reader.readLine()) != null)
+                {
+                    sb.append(line + "\n");
+                }
+                // Response from server after login process will be stored in response variable.
+                response = sb.toString();
+                // You can perform UI operations here
+
+                Log.d("website", response);
+                isr.close();
+                reader.close();
+
+            }
+            catch(IOException e)
+            {
+                // Error
+            }
+
+          /*  try {
 
                 // Add your data
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                 nameValuePairs.add(new BasicNameValuePair("longitude", eventlongitude));
                 nameValuePairs.add(new BasicNameValuePair("latitude", eventlatitude));
                 nameValuePairs.add(new BasicNameValuePair("comment", eventcomment));
-                nameValuePairs.add(new BasicNameValuePair("day", eventday));
-                nameValuePairs.add(new BasicNameValuePair("month", eventmonth));
-                nameValuePairs.add(new BasicNameValuePair("hour", eventhour));
-                nameValuePairs.add(new BasicNameValuePair("minutes", eventminutes));
+                nameValuePairs.add(new BasicNameValuePair("time", eventtime));
+                nameValuePairs.add(new BasicNameValuePair("date", eventdate));
                 nameValuePairs.add(new BasicNameValuePair("eventoption", eventoption));
 
 
+                Log.d("website", "option :" + eventoption);
+                Log.d("website", "longitude :" + eventlongitude);
+                Log.d("website", "latitude :" + eventlatitude);
+                Log.d("website", "comment :" + eventcomment);
+                Log.d("website", "time :" + eventtime);
+                Log.d("website", "date :" + eventdate);
+
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+
 
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
+                String json = EntityUtils.toString(response.getEntity());
+                Log.d("writetodatabase", json.toString());
+                try {
+                    JSONObject jsonObject = new JSONObject(json);
+                    if(jsonObject.getInt("success")==1 )
+                    {
+                        Log.d("writetodatabase", "erfolgreich eingetragen");
+                    }else
+                    {
+                        Log.d("writetodatabase", "eintragung fehlgeschlagen");
+                    }
+                } catch (JSONException e) {
+                        Log.d("writetodatabase", "Json konnte nicht erstellt werden");
+                }
 
                 // TODO Auto-generated catch block
             } catch (IOException e) {
             }
-
+*/
 
             return null;
         }
-
 
 
         /**

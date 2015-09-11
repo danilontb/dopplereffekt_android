@@ -42,7 +42,7 @@ public class Backgrounddownloading extends Service {
     int aktualisierungszyklus = 1000 * 15 * 60;    //immer in ms angeben 3600000ms = 1h
     public static String downloadwebsite = "http://stuxnet.bplaced.net/readfromdatabase.php?databasename=";
     List<android.location.Address> addresses;
-    String[] lighterOptions = {"fixLighter", "mobileLighter", "laserLighter", "controlePosition"};
+    String[] lighterOptions = {"fixLighter", "radarfallen", "laserLighter", "controlePosition"};
     public static boolean readable = false;
 
     public static List fixLighterAdresse;
@@ -79,6 +79,7 @@ public class Backgrounddownloading extends Service {
 
         clearAllLists();
 
+        new backgroundjsondownload().execute();
 
         Log.d("Backgrounddownloading", "onCreate");
         int delay = 0; // delay for 0 sec.
@@ -127,7 +128,7 @@ public class Backgrounddownloading extends Service {
                 fixLighterlng.clear();
             }
             break;
-            case "mobileLighter":
+            case "radarfallen":
             {
                 mobileLighterAdresse.clear();
                 mobileLighterlat.clear();
@@ -302,7 +303,7 @@ public class Backgrounddownloading extends Service {
                                         fixLighterlng.add(lng);
                                     }
                                     break;
-                                    case "mobileLighter": {
+                                    case "radarfallen": {
 
                                         mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
                                         mobileLighterlat.add(lat);
@@ -331,7 +332,7 @@ public class Backgrounddownloading extends Service {
                                         fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
                                     }
                                     break;
-                                    case "mobileLighter": {
+                                    case "radarfallen": {
                                         mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
                                     }
                                     break;
