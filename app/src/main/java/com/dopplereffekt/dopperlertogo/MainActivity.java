@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /*
 TODO GPS adressen checken ist erledigt. Als�chstes w�re checken, warum immer eine neues FIle heruntergeladen wird.
@@ -99,18 +101,57 @@ public class MainActivity extends Activity {
         Log.d("init", "init sollte startetn");
         new initialism().execute();
 
-        Log.d("init", "backgroundservice startet-");
+        Log.d("init", "backgroundservice startet");
         //start service to download data from database
         backgroundservice = new Intent(this, Backgrounddownloading.class);
         startService(backgroundservice);
-
-
-
-
-
-
-
     }
+
+
+    //diese Methode löst die Adresse (PLZ + Strasse) nach ihren Lngengrad auf.
+    //Imfalle wenn die Adresse nicht aufgelst werden kann oder die bergebene
+    //Adresse sei null, wird einfach nicht gemacht und mit der nchsten probiert...Ist nicht professionell aber naja:)
+    public Location convertAddressToCoor(String[] apiadress) {
+
+        Location lc = new Location("point A");
+        Geocoder coder = new Geocoder(getApplication());
+        List<Address> address;
+        double lat;
+        double lng;
+        Backgrounddownloading.officialLighterAdresse = new ArrayList();
+        Backgrounddownloading.officialLighterLng = new ArrayList();
+        Backgrounddownloading.officialLighterLat = new ArrayList();
+
+        for(String api : apiadress) {
+
+            try {
+                address = coder.getFromLocationName(api, 5);
+                if (!(address == null)) {
+                    android.location.Address location = address.get(0);
+                    lng = location.getLongitude();
+                    lat = location.getLatitude();
+
+                    lc.setLatitude(lat);
+                    lc.setLongitude(lng);
+
+                    Backgrounddownloading.officialLighterAdresse.add(api);
+                    Backgrounddownloading.officialLighterLat.add(lat);
+                    Backgrounddownloading.officialLighterLng.add(lng);
+
+                    //  lc.setLatitude(location.getLatitude());
+
+                    Log.d("loca", lng + " " + lat);
+                } else {
+                    Log.d("loca", "Adresse war leer");
+                }
+            } catch (Exception ex) {
+                Log.d("loca", "Adresse konnte nicht umgewandelt werden");
+                ex.printStackTrace();
+            }
+        }
+        return lc;
+    }
+
 
     public void initialization() {
         //Die Klasse SharedPefrences hilft kleine Datens�tze in der Internen Datenbank zu Speichern.
@@ -162,7 +203,11 @@ public class MainActivity extends Activity {
             download();
         }
 
+        convertAddressToCoor(ConvertPDF.pdf2AdressStringForAPI());
 
+        for(Object d : Backgrounddownloading.officialLighterAdresse){
+            Log.d("locanachher", d.toString());
+        }
     }
 
     private void createDrawer(Bundle savedInstanceState) {
@@ -548,15 +593,15 @@ public class MainActivity extends Activity {
     private class DownloadFile extends AsyncTask<String, Void, Void> {
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
-  /*          pDialog = new ProgressDialog(MainActivity.this);
+ /*           super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setTitle("Initialisierung");
             pDialog.setMessage("Vorbereitungen in Arbeit");
             pDialog.setProgressStyle(R.style.AppTheme);
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
-   */
+*/
         }
 
         @Override
@@ -615,4 +660,7 @@ public class MainActivity extends Activity {
         }
 
     }
+
+
+
 }

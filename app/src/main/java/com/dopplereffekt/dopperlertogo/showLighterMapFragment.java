@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -235,6 +236,19 @@ public class showLighterMapFragment extends Fragment {
 
         public void drawOtherMarker(String lighter) {
             switch (lighter) {
+                case "officialLighter": {
+                    for (int i = 0; i < Backgrounddownloading.officialLighterAdresse.size(); i++) {
+
+                        // create marker
+                        MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.officialLighterLat.get(i),
+                                (Double)Backgrounddownloading.officialLighterLng.get(i))).title((String)Backgrounddownloading.officialLighterAdresse.get(i));
+                        // Changing marker icon
+                        thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        //         googleMap.addMarker(thessaloniki);
+                        publishProgress(thessaloniki);
+
+                    }
+                }break;
                 case "fixLighter": {
                     for (int i = 0; i < Backgrounddownloading.fixLighterAdresse.size(); i++) {
 
@@ -293,7 +307,7 @@ public class showLighterMapFragment extends Fragment {
             if (args.length > 0) {
                 switch (args[0]) {
                     case "offizielle Blitzer": {
-                        drawMarkerOfficial();
+                        drawOtherMarker("officialLighter");
                     }
                     break;
                     case "Fest instllierte Blitzer": {

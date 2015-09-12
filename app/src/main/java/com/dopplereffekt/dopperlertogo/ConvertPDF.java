@@ -1,11 +1,35 @@
 package com.dopplereffekt.dopperlertogo;
 
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.UserHandle;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Display;
 
 import com.google.android.gms.identity.intents.Address;
 import com.itextpdf.text.pdf.PdfReader;
@@ -13,8 +37,13 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,12 +61,11 @@ import java.util.Locale;
 
 public class ConvertPDF {
 
-Context context ;
+    public static Context context ;
+
+
 
     public static String pdf2string() throws IOException {
-
-
-
         //hier wird der Pfad angegeben wo sich das pdf befindet und wie es heisst
         String pdfPath = Environment.getExternalStorageDirectory() + "/" + MainActivity.foldername + "/" + MainActivity.pdfname;
         //Die Klasse PdfReader, auch aus der Library, kan den inhalt des PDF in String verwandeln.

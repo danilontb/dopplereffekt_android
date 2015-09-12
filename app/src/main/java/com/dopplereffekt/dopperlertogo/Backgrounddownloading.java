@@ -3,6 +3,7 @@ import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
@@ -58,6 +59,10 @@ public class Backgrounddownloading extends Service {
     public static List laserLighterlat;
     public static List controlePositionlat;
 
+    public static List officialLighterAdresse;
+    public static List officialLighterLng;
+    public static List officialLighterLat;
+
     @Override
     public void onCreate() {
 
@@ -77,22 +82,21 @@ public class Backgrounddownloading extends Service {
         laserLighterlat = new ArrayList();
         controlePositionlat = new ArrayList();
 
+        officialLighterAdresse = new ArrayList();
+        officialLighterLng = new ArrayList();
+        officialLighterLat = new ArrayList();
+
         clearAllLists();
 
         new backgroundjsondownload().execute();
-
         Log.d("Backgrounddownloading", "onCreate");
+
         int delay = 0; // delay for 0 sec.
         int period = 1000 * 60 * 2; // repeat every 10 sec.
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                Log.d("thread", "run läuft " + i);
-                // readInformation();
-
                 new backgroundjsondownload().execute();
-
-                i++;
             }
         }, delay, period);
     }
@@ -116,11 +120,21 @@ public class Backgrounddownloading extends Service {
         mobileLighterlat.clear();
         laserLighterlat.clear();
         controlePositionlat.clear();
+        officialLighterAdresse.clear();
+        officialLighterLat.clear();
+        officialLighterLng.clear();
     }
 
     public void clearExpliciteList(String listName){
         switch (listName)
         {
+            case "officialLighter":
+            {
+                officialLighterAdresse.clear();
+                officialLighterLat.clear();
+                officialLighterLng.clear();
+            }
+            break;
             case "fixLighter":
             {
                 fixLighterAdresse.clear();
@@ -369,6 +383,7 @@ public class Backgrounddownloading extends Service {
             readable = true;
                         return null;
         }
+
 
         @Override
         protected void onPostExecute(Void aVoid) {
