@@ -85,16 +85,16 @@ public class showLighterListFragment extends Fragment {
         publicLighterlist.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray()));
         publicLighterlist.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
 
-        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.fixLighterAdresse));
+        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.fixLighterAdrAndCom));
         fixLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_fixlighter));
 
-        mobileLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.mobileLighterAdresse));
+        mobileLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.mobileLighterAdrAndCom));
         mobileLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_mobilelighter));
 
-        laserLigterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.laserLighterAdresse));
+        laserLigterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.laserLighterAdrAndCom));
         laserLigterList.setBackgroundColor(getResources().getColor(R.color.listbachground_laserlighter));
 
-        controleList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.controlePositionAdresse));
+        controleList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.controlePositionAdrAndCom));
         controleList.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
 
 

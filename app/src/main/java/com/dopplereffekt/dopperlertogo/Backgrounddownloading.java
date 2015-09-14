@@ -47,9 +47,17 @@ public class Backgrounddownloading extends Service {
     public static boolean readable = false;
 
     public static List fixLighterAdresse;
+    public static List fixLighterAdrAndCom;
+    public static List fixLightercomment;
     public static List mobileLighterAdresse;
+    public static List mobileLighterAdrAndCom;
+    public static List mobileLightercomment;
     public static List laserLighterAdresse;
+    public static List laserLighterAdrAndCom;
+    public static List laserLightercomment;
     public static List controlePositionAdresse;
+    public static List controlePositionAdrAndCom;
+    public static List controlePositioncomment;
     public static List fixLighterlng;
     public static List mobileLighterlng;
     public static List laserLighterlng;
@@ -67,10 +75,21 @@ public class Backgrounddownloading extends Service {
     public void onCreate() {
 
         Log.d("thread", "im theread eingestiegen.");
+
+        fixLighterAdrAndCom  = new ArrayList();
+        mobileLighterAdrAndCom  = new ArrayList();
+        laserLighterAdrAndCom  = new ArrayList();
+        controlePositionAdrAndCom  = new ArrayList();
+
         fixLighterAdresse = new ArrayList();
         mobileLighterAdresse = new ArrayList();
         laserLighterAdresse = new ArrayList();
         controlePositionAdresse = new ArrayList();
+
+        fixLightercomment = new ArrayList();
+        mobileLightercomment = new ArrayList();
+        laserLightercomment = new ArrayList();
+        controlePositioncomment = new ArrayList();
 
         fixLighterlng = new ArrayList();
         mobileLighterlng = new ArrayList();
@@ -140,6 +159,8 @@ public class Backgrounddownloading extends Service {
                 fixLighterAdresse.clear();
                 fixLighterlat.clear();
                 fixLighterlng.clear();
+                fixLightercomment.clear();
+                fixLighterAdrAndCom.clear();
             }
             break;
             case "radarfallen":
@@ -147,6 +168,8 @@ public class Backgrounddownloading extends Service {
                 mobileLighterAdresse.clear();
                 mobileLighterlat.clear();
                 mobileLighterlng.clear();
+                mobileLightercomment.clear();
+                mobileLighterAdrAndCom.clear();
             }
             break;
             case "laserLighter":
@@ -154,6 +177,8 @@ public class Backgrounddownloading extends Service {
                 laserLighterAdresse.clear();
                 laserLighterlat.clear();
                 laserLighterlng.clear();
+                laserLightercomment.clear();
+                laserLighterAdrAndCom.clear();
             }
             break;
             case "controlePosition":
@@ -161,6 +186,8 @@ public class Backgrounddownloading extends Service {
                 controlePositionAdresse.clear();
                 controlePositionlat.clear();
                 controlePositionlng.clear();
+                controlePositioncomment.clear();
+                controlePositionAdrAndCom.clear();
             }
             break;
             default:
@@ -170,99 +197,6 @@ public class Backgrounddownloading extends Service {
             break;
         }
     }
-
-    private void readInformation() {
-        double lat;
-        double lng;
-        String comment = null;
-        JSONObject helpingObject = null;
-
-        for (String option : lighterOptions) {
-            List<NameValuePair> list = new ArrayList<NameValuePair>();
-            list.add(new BasicNameValuePair("databasename", option));
-            JSONObject json = jParser.makeHttpRequest(downloadwebsite, "GET", list);
-            if (json != null) {
-                Log.d("Backgrounddownloading", "json ist voll");
-                try {
-                    JSONArray jsonArray = json.getJSONArray(option);
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        helpingObject = jsonArray.getJSONObject(i);
-                        lat = new Double(helpingObject.getString("latitude"));
-                        lng = new Double(helpingObject.getString("longitude"));
-                        comment = helpingObject.getString("comment");
-
-
-                        Geocoder geo = new Geocoder(getApplicationContext(), Locale.getDefault());
-                        addresses = geo.getFromLocation(lat, lng, 1);
-
-
-
-                        if (addresses.get(0).getLocality() == null) {
-                            switch (option) {
-                                case "fixLighter": {
-                                    fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                                    fixLighterlat.add(lat);
-                                    fixLighterlng.add(lng);
-                                }
-                                break;
-                                case "mobileLighter": {
-                                    mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                                    mobileLighterlat.add(lat);
-                                    mobileLighterlng.add(lng);
-                                }
-                                break;
-                                case "laserLighter": {
-                                    laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                                    laserLighterlat.add(lat);
-                                    laserLighterlng.add(lng);
-                                }
-                                break;
-                                case "controlePosition": {
-                                    controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                                    controlePositionlat.add(lat);
-                                    controlePositionlng.add(lng);
-                                }
-                                break;
-                            }
-                        } else if (addresses.get(0).getSubLocality() == null) {
-                            Log.d("outputgeo", addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-
-
-                            switch (option) {
-                                case "fixLighter": {
-                                    fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                                }
-                                break;
-                                case "mobileLighter": {
-                                    mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                                }
-                                break;
-                                case "laserLighter": {
-                                    laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                                }
-                                break;
-                                case "controlePosition": {
-                                    controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " Kommentar: " + comment);
-                                }
-                                break;
-                            }
-                        } else {
-                            Log.d("problem", "die adresse war leer und wird somit abgebrochen");
-                        }
-                    }
-                } catch (JSONException | IOException e) {
-
-                }
-            } else {
-                Log.d("Backgrounddownloading", "json ist leer");
-            }
-
-        }
-    }
-
-
-
-
 
 
     /**
@@ -308,56 +242,180 @@ public class Backgrounddownloading extends Service {
                             if (addresses.get(0).getLocality() == null) {
                                 switch (lighterOptions[i]) {
                                     case "fixLighter": {
-                                        fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        if(addresses.get(0).getPostalCode() == null && addresses.get(0).getThoroughfare()==null)
+                                        {
+                                            fixLighterAdresse.add(addresses.get(0).getSubLocality());
+                                            fixLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " : " +comment);
+                                        }else if (addresses.get(0).getPostalCode() == null)
+                                        {
+                                            fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getThoroughfare());
+                                            fixLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getThoroughfare() + " : " +comment);
+                                        }else if(addresses.get(0).getThoroughfare() == null)
+                                        {
+                                            fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode());
+                                            fixLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " : " +comment);
+                                        }else{
+                                            fixLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare());
+                                            fixLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " +comment);
+                                        }
+                                        fixLightercomment.add(comment);
                                         fixLighterlat.add(lat);
                                         fixLighterlng.add(lng);
                                     }
                                     break;
                                     case "radarfallen": {
-
-                                        mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        if(addresses.get(0).getPostalCode() == null && addresses.get(0).getThoroughfare()==null)
+                                        {
+                                            mobileLighterAdresse.add(addresses.get(0).getSubLocality());
+                                            mobileLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " : " + comment);
+                                        }else if (addresses.get(0).getPostalCode() == null)
+                                        {
+                                            mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getThoroughfare());
+                                            mobileLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        }else if(addresses.get(0).getThoroughfare() == null)
+                                        {
+                                            mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode());
+                                            mobileLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " : " + comment);
+                                        }else{
+                                            mobileLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare());
+                                            mobileLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        }
+                                        mobileLightercomment.add(comment);
                                         mobileLighterlat.add(lat);
                                         mobileLighterlng.add(lng);
                                     }
                                     break;
                                     case "laserLighter": {
-                                        laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        if(addresses.get(0).getPostalCode() == null && addresses.get(0).getThoroughfare()==null)
+                                        {
+                                            laserLighterAdresse.add(addresses.get(0).getSubLocality());
+                                            laserLighterAdrAndCom.add(addresses.get(0).getSubLocality() +" : "+comment);
+                                        }else if (addresses.get(0).getPostalCode() == null)
+                                        {
+                                            laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getThoroughfare());
+                                            laserLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }else if(addresses.get(0).getThoroughfare() == null)
+                                        {
+                                            laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode());
+                                            laserLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() +" : "+comment);
+                                        }else{
+                                            laserLighterAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare());
+                                            laserLighterAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }
+                                        laserLightercomment.add(comment);
                                         laserLighterlat.add(lat);
                                         laserLighterlng.add(lng);
                                     }
                                     break;
                                     case "controlePosition": {
-                                        controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        if(addresses.get(0).getPostalCode() == null && addresses.get(0).getThoroughfare()==null)
+                                        {
+                                            controlePositionAdresse.add(addresses.get(0).getSubLocality());
+                                            controlePositionAdrAndCom.add(addresses.get(0).getSubLocality() +" : "+comment);
+                                        }else if (addresses.get(0).getPostalCode() == null)
+                                        {
+                                            controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getThoroughfare());
+                                            controlePositionAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }else if(addresses.get(0).getThoroughfare() == null)
+                                        {
+                                            controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode());
+                                            controlePositionAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() +" : "+comment);
+                                        }else{
+                                            controlePositionAdresse.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare());
+                                            controlePositionAdrAndCom.add(addresses.get(0).getSubLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }
+                                        controlePositioncomment.add(comment);
                                         controlePositionlat.add(lat);
                                         controlePositionlng.add(lng);
                                     }
                                     break;
                                 }
                             } else if (addresses.get(0).getSubLocality() == null) {
-                                Log.d("outputgeo", addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
-
-
                                 switch (lighterOptions[i]) {
                                     case "fixLighter": {
-                                        fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        if(addresses.get(0).getPostalCode() == null && addresses.get(0).getThoroughfare()==null)
+                                        {
+                                            fixLighterAdresse.add(addresses.get(0).getLocality());
+                                            fixLighterAdrAndCom.add(addresses.get(0).getLocality() +" : "+comment);
+                                        }else if (addresses.get(0).getPostalCode() == null)
+                                        {
+                                            fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getThoroughfare());
+                                            fixLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }else if(addresses.get(0).getThoroughfare() == null)
+                                        {
+                                            fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode());
+                                            fixLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() +" : "+comment);
+                                        }else{
+                                            fixLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare());
+                                            fixLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }
+                                        fixLightercomment.add(comment);
                                         fixLighterlat.add(lat);
                                         fixLighterlng.add(lng);
                                     }
                                     break;
                                     case "radarfallen": {
-                                        mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        if(addresses.get(0).getPostalCode() == null && addresses.get(0).getThoroughfare()==null)
+                                        {
+                                            mobileLighterAdresse.add(addresses.get(0).getLocality());
+                                            mobileLighterAdrAndCom.add(addresses.get(0).getLocality() +" : "+comment);
+                                        }else if (addresses.get(0).getPostalCode() == null)
+                                        {
+                                            mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getThoroughfare());
+                                            mobileLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }else if(addresses.get(0).getThoroughfare() == null)
+                                        {
+                                            mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode());
+                                            mobileLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() +" : "+comment);
+                                        }else{
+                                            mobileLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare());
+                                            mobileLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }
+                                        mobileLightercomment.add(comment);
                                         mobileLighterlat.add(lat);
                                         mobileLighterlng.add(lng);
                                     }
                                     break;
                                     case "laserLighter": {
-                                        laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        if(addresses.get(0).getPostalCode() == null && addresses.get(0).getThoroughfare()==null)
+                                        {
+                                            laserLighterAdresse.add(addresses.get(0).getLocality());
+                                            laserLighterAdrAndCom.add(addresses.get(0).getLocality() +" : "+comment);
+                                        }else if (addresses.get(0).getPostalCode() == null)
+                                        {
+                                            laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getThoroughfare());
+                                            laserLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }else if(addresses.get(0).getThoroughfare() == null)
+                                        {
+                                            laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode());
+                                            laserLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() +" : "+comment);
+                                        }else{
+                                            laserLighterAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare());
+                                            laserLighterAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }
+                                        laserLightercomment.add(comment);
                                         laserLighterlat.add(lat);
                                         laserLighterlng.add(lng);
                                     }
                                     break;
                                     case "controlePosition": {
-                                        controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() + " : " + comment);
+                                        if(addresses.get(0).getPostalCode() == null && addresses.get(0).getThoroughfare()==null)
+                                        {
+                                            controlePositionAdresse.add(addresses.get(0).getLocality());
+                                            controlePositionAdrAndCom.add(addresses.get(0).getLocality() +" : "+comment);
+                                        }else if (addresses.get(0).getPostalCode() == null)
+                                        {
+                                            controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getThoroughfare());
+                                            controlePositionAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }else if(addresses.get(0).getThoroughfare() == null)
+                                        {
+                                            controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode());
+                                            controlePositionAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() +" : "+comment);
+                                        }else{
+                                            controlePositionAdresse.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare());
+                                            controlePositionAdrAndCom.add(addresses.get(0).getLocality() + " " + addresses.get(0).getPostalCode() + " " + addresses.get(0).getThoroughfare() +" : "+comment);
+                                        }
+                                        controlePositioncomment.add(comment);
                                         controlePositionlat.add(lat);
                                         controlePositionlng.add(lng);
                                     }

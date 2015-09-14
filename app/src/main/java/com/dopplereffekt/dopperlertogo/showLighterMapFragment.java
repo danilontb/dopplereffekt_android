@@ -4,14 +4,11 @@ package com.dopplereffekt.dopperlertogo;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -30,11 +26,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -63,7 +54,6 @@ public class showLighterMapFragment extends Fragment {
             for (int i = 0; i < anzOffizielleBlitzer; i++) {
                 orte[i] = convertAddressToCoor(adressen[i]);
             }
-
     }
 
 
@@ -89,7 +79,6 @@ public class showLighterMapFragment extends Fragment {
             }
         });
 
-        Log.d("adressenarray", "fettig");
         mMapView = (MapView) rootView.findViewById(R.id.lightershowmap);
         mMapView.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -246,7 +235,6 @@ public class showLighterMapFragment extends Fragment {
                         thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
                         //         googleMap.addMarker(thessaloniki);
                         publishProgress(thessaloniki);
-
                     }
                 }break;
                 case "fixLighter": {
@@ -254,7 +242,7 @@ public class showLighterMapFragment extends Fragment {
 
                         // create marker
                         MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.fixLighterlat.get(i),
-                                (Double)Backgrounddownloading.fixLighterlng.get(i))).title((String)Backgrounddownloading.fixLighterAdresse.get(i));
+                                (Double)Backgrounddownloading.fixLighterlng.get(i))).title((String)Backgrounddownloading.fixLighterAdresse.get(i)).snippet((String) Backgrounddownloading.fixLightercomment.get(i));
                         // Changing marker icon
                         thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
                         //         googleMap.addMarker(thessaloniki);
@@ -266,7 +254,7 @@ public class showLighterMapFragment extends Fragment {
                     for (int i = 0; i < Backgrounddownloading.mobileLighterAdresse.size(); i++) {
                         // create marker
                         MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.mobileLighterlat.get(i),
-                                (Double)Backgrounddownloading.mobileLighterlng.get(i))).title((String)Backgrounddownloading.mobileLighterAdresse.get(i));
+                                (Double)Backgrounddownloading.mobileLighterlng.get(i))).title((String) Backgrounddownloading.mobileLighterAdresse.get(i)).snippet((String) Backgrounddownloading.mobileLightercomment.get(i));
                         // Changing marker icon
                         thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                         //         googleMap.addMarker(thessaloniki);
@@ -277,7 +265,7 @@ public class showLighterMapFragment extends Fragment {
                         for (int i = 0; i < Backgrounddownloading.laserLighterAdresse.size(); i++) {
                             // create marker
                             MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.laserLighterlat.get(i),
-                                    (Double)Backgrounddownloading.laserLighterlng.get(i))).title((String)Backgrounddownloading.laserLighterAdresse.get(i));
+                                    (Double)Backgrounddownloading.laserLighterlng.get(i))).title((String) Backgrounddownloading.laserLighterAdresse.get(i)).snippet((String) Backgrounddownloading.laserLightercomment.get(i));
                             // Changing marker icon
                             thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
                             //         googleMap.addMarker(thessaloniki);
@@ -288,7 +276,7 @@ public class showLighterMapFragment extends Fragment {
                     for (int i = 0; i < Backgrounddownloading.controlePositionAdresse.size(); i++) {
                         // create marker
                         MarkerOptions thessaloniki = new MarkerOptions().position(new LatLng((Double)Backgrounddownloading.controlePositionlat.get(i),
-                                (Double)Backgrounddownloading.controlePositionlng.get(i))).title((String)Backgrounddownloading.controlePositionAdresse.get(i));
+                                (Double)Backgrounddownloading.controlePositionlng.get(i))).title((String) Backgrounddownloading.controlePositionAdresse.get(i)).snippet((String) Backgrounddownloading.controlePositioncomment.get(i));
                         // Changing marker icon
                         thessaloniki.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                         //         googleMap.addMarker(thessaloniki);
