@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -37,44 +38,42 @@ public class showLighterListFragment extends Fragment {
     ListView mobileLighterList;
     ListView laserLigterList;
     ListView controleList;
-
-
-    String[] placeHolderArray = {"download ist in arbeit", "download ist in arbeit", "download ist in arbeit"};
-
-    List<android.location.Address> addresses;
-
-    public boolean flag = false;
-    JSONParser jParser = new JSONParser();
-    // products JSONArray
-    JSONArray products = null;
-
-    public static List testAdresse;
+    TextView tv_aktualisierung ;
+    TextView tv_updateDate_FixLighter ;
+    TextView tv_updateDate_mobileLighter ;
+    TextView tv_updateDate_laserLighter ;
+    TextView tv_updateDate_controlePosition ;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
 
         Log.d("fragment", "fragement onCreateView");
 
+
         Log.d("fragment", "Size of List : " + Backgrounddownloading.fixLighterAdresse.size() + " : " + Backgrounddownloading.mobileLighterAdresse.size() + " : " + Backgrounddownloading.laserLighterAdresse.size()
-         + " : " + Backgrounddownloading.controlePositionAdresse.size());
+                + " : " + Backgrounddownloading.controlePositionAdresse.size());
 
 
         View rootView = inflater.inflate(R.layout.showlighterlist_fragment, container, false);
         setHasOptionsMenu(true);
 
-        testAdresse = new ArrayList();
-        testAdresse.add("try it");
-        testAdresse.add("danilo");
-        testAdresse.add("vanessa");
-        testAdresse.add("valeria");
-        testAdresse.add("Genna");
+        tv_aktualisierung               = (TextView)rootView.findViewById(R.id.tv_updateDate);
+        tv_updateDate_FixLighter        = (TextView)rootView.findViewById(R.id.tv_updateDateFixLighter);
+        tv_updateDate_mobileLighter     = (TextView)rootView.findViewById(R.id.tv_updateDateMobileLighter);
+        tv_updateDate_laserLighter      = (TextView)rootView.findViewById(R.id.tv_updateDate_laserLighter);
+        tv_updateDate_controlePosition  = (TextView)rootView.findViewById(R.id.tv_updateDate_controlePosition);
+
+        tv_aktualisierung.setText(ConvertPDF.getUpdateDate());
+        tv_updateDate_FixLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
+        tv_updateDate_mobileLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
+        tv_updateDate_laserLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
+        tv_updateDate_controlePosition.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
 
         publicLighterlist = (ListView) rootView.findViewById(R.id.publiclighterlist);
         fixLighterList = (ListView) rootView.findViewById(R.id.fixlighterlist);
         mobileLighterList = (ListView) rootView.findViewById(R.id.mobilelighterlist);
         laserLigterList = (ListView) rootView.findViewById(R.id.laserlighterlist);
         controleList = (ListView) rootView.findViewById(R.id.controleList);
-
 
         publicLighterlist.requestLayout();
         fixLighterList.requestLayout();

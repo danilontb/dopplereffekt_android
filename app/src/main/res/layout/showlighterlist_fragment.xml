@@ -9,64 +9,130 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-         android:gravity="center_vertical|center_horizontal"
-         android:text="öffentliche Blitzer"
-         android:id="@+id/oeffentlich" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <ListView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="Öffentliche Blitzer  : "
+                android:id="@+id/textView3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Aktualisierungsdatum"
+                android:id="@+id/tv_updateDate" />
+        </LinearLayout>
+
+        <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/publiclighterlist" />
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="Fest platzierte Blitzer"
-            android:id="@+id/fix" />
+            android:layout_height="match_parent" >
 
-    <ListView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="Fix platzierte Blitzer :"
+                android:id="@+id/textView4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Aktualisierungsdatum"
+                android:id="@+id/tv_updateDateFixLighter" />
+        </LinearLayout>
+
+        <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fixlighterlist" />
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="mobile Blitzer"
-            android:id="@+id/mobile" />
+            android:layout_height="match_parent" >
 
-    <ListView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="mobile Blitzer :"
+                android:id="@+id/textView6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Aktualisierungsdatum"
+                android:id="@+id/tv_updateDateMobileLighter" />
+        </LinearLayout>
+
+        <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/mobilelighterlist" />
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="Lasermessungen"
-            android:id="@+id/laser" />
+            android:layout_height="match_parent" >
 
-    <ListView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="Lasermessungen :"
+                android:id="@+id/textView8" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Aktualisierungsdatum"
+                android:id="@+id/tv_updateDate_laserLighter" />
+        </LinearLayout>
+
+        <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/laserlighterlist" />
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="Verkehrskontrollen"
-            android:id="@+id/controle" />
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="Verkehrskontrollen :"
+                android:id="@+id/textView10" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Aktualisierungsdatum"
+                android:id="@+id/tv_updateDate_controlePosition" />
+        </LinearLayout>
 
         <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/controleList" />
+
     </LinearLayout>
 </ScrollView>

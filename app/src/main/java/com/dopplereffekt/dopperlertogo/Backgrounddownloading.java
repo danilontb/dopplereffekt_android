@@ -7,6 +7,8 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.TextView;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -14,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,21 +30,9 @@ import java.util.TimerTask;
  * Created by dsantagata on 11.06.2015.
  */
 public class Backgrounddownloading extends Service {
-    int i = 0;
 
-    HttpURLConnection urlConnection;
-    // Progress Dialog
-    private ProgressDialog pDialog;
 
-    // Creating JSON Parser object
-    JSONParser jParser = new JSONParser();
-
-    ArrayList<HashMap<String, String>> productsList;
-
-    // products JSONArray
-    JSONArray products = null;
-
-    int aktualisierungszyklus = 1000 * 15 * 60;    //immer in ms angeben 3600000ms = 1h
+    public static String updateTimeStamp = "wurde noch nicht übermittelt";
     public static String downloadwebsite = "http://stuxnet.bplaced.net/readfromdatabase.php?databasename=";
     List<android.location.Address> addresses;
     String[] lighterOptions = {"fixLighter", "radarfallen", "laserLighter", "controlePosition"};
@@ -217,6 +209,9 @@ public class Backgrounddownloading extends Service {
             String comment = "";
             double lat;
             double lng;
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+            updateTimeStamp = sdf.format(new Date());
 
             for(int i=0; i<lighterOptions.length; i++)
             {
