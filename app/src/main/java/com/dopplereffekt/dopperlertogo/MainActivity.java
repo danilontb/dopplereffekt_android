@@ -168,6 +168,8 @@ public class MainActivity extends Activity {
         Log.d("filereader", " newFiledate: " + newFiledate);
         Log.d("filereader", " oldFiledate: " + oldFiledate);
 
+        showLighterListFragment.refreshing = false;
+
         //�berpr�fung ob das PDF schon existiert oder ob ein neues heruntergeladen werden muss.
         if (ConvertPDF.pdfExists()) {
             Log.d("pdfcheck", "pdf existiert");
@@ -204,10 +206,6 @@ public class MainActivity extends Activity {
         }
 
         convertAddressToCoor(ConvertPDF.pdf2AdressStringForAPI());
-
-        for(Object d : Backgrounddownloading.officialLighterAdresse){
-            Log.d("locanachher", d.toString());
-        }
     }
 
     private void createDrawer(Bundle savedInstanceState) {
@@ -641,7 +639,7 @@ public class MainActivity extends Activity {
                pDialog.setMessage("Daten werden vorbereitet.");
                pDialog.setProgressStyle(R.style.AppTheme);
                pDialog.setIndeterminate(false);
-               pDialog.setCancelable(true);
+               pDialog.setCancelable(false);
                pDialog.show();
            }
 

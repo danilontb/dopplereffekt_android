@@ -42,10 +42,11 @@ public class GPSService extends Service {
         latArray = new float[adressenForConvert.length];
         strecke = new double[adressenForConvert.length];
         //aus jeder Adresse wird die Longitude und die Latitude gewonnen und ins Array gespeichert.
-        for (int i = 0; i < adressenForConvert.length; i++) {
+  /*      for (int i = 0; i < adressenForConvert.length; i++) {
             lngArray[i] = convertAddressToLng(adressenForConvert[i]);
             latArray[i] = convertAddressToLat(adressenForConvert[i]);
         }
+   */
     }
 
 

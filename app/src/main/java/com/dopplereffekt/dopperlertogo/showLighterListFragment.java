@@ -1,13 +1,14 @@
 package com.dopplereffekt.dopperlertogo;
 
 
+import android.app.Activity;
 import android.app.Fragment;
-
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.FragmentTransaction;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,41 +22,46 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by dsantagata on 31.05.2015.
  */
-public class showLighterListFragment extends Fragment {
-    // public WarningFragment(){}
-    private ProgressDialog pDialog1;
+public class showLighterListFragment extends Fragment{
+
+    public static Boolean refreshing;
     private ProgressDialog pDialog;
-    ListView publicLighterlist;
-    ListView fixLighterList;
-    ListView mobileLighterList;
-    ListView laserLigterList;
-    ListView controleList;
-    TextView tv_aktualisierung ;
-    TextView tv_updateDate_FixLighter ;
-    TextView tv_updateDate_mobileLighter ;
-    TextView tv_updateDate_laserLighter ;
-    TextView tv_updateDate_controlePosition ;
+    public static ListView publicLighterlist;
+    public static ListView fixLighterList;
+    public static ListView mobileLighterList;
+    public static ListView laserLigterList;
+    public static ListView controleList;
+    public static TextView tv_aktualisierung;
+    public static TextView tv_updateDate_FixLighter;
+    public static TextView tv_updateDate_mobileLighter;
+    public static TextView tv_updateDate_laserLighter;
+    public static TextView tv_updateDate_controlePosition;
+
+    public static SwipeRefreshLayout swipeRefreshLayout;
+
+    public static ArrayAdapter officialLighterAdapter;
+    public static ArrayAdapter fixLighterAdapter;
+    public static ArrayAdapter mobileLighterAdapter;
+    public static ArrayAdapter laserLighterAdapter;
+    public static ArrayAdapter controlePositionAdapter;
+
+    public static Activity activity;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
 
-        Log.d("fragment", "fragement onCreateView");
-
-
-        Log.d("fragment", "Size of List : " + Backgrounddownloading.fixLighterAdresse.size() + " : " + Backgrounddownloading.mobileLighterAdresse.size() + " : " + Backgrounddownloading.laserLighterAdresse.size()
-                + " : " + Backgrounddownloading.controlePositionAdresse.size());
-
-
         View rootView = inflater.inflate(R.layout.showlighterlist_fragment, container, false);
         setHasOptionsMenu(true);
+
+        // Retrieve the SwipeRefreshLayout and ListView instances
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
+
+         activity = (Activity)rootView.getContext();
 
         tv_aktualisierung               = (TextView)rootView.findViewById(R.id.tv_updateDate);
         tv_updateDate_FixLighter        = (TextView)rootView.findViewById(R.id.tv_updateDateFixLighter);
@@ -75,27 +81,32 @@ public class showLighterListFragment extends Fragment {
         laserLigterList = (ListView) rootView.findViewById(R.id.laserlighterlist);
         controleList = (ListView) rootView.findViewById(R.id.controleList);
 
+        officialLighterAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray());
+        fixLighterAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.fixLighterAdrAndCom);
+        mobileLighterAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.mobileLighterAdrAndCom);
+        laserLighterAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.laserLighterAdrAndCom);
+        controlePositionAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.controlePositionAdrAndCom);
+
         publicLighterlist.requestLayout();
         fixLighterList.requestLayout();
         mobileLighterList.requestLayout();
         laserLigterList.requestLayout();
         controleList.requestLayout();
 
-        publicLighterlist.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray()));
+        publicLighterlist.setAdapter(officialLighterAdapter);
         publicLighterlist.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
 
-        fixLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.fixLighterAdrAndCom));
+        fixLighterList.setAdapter(fixLighterAdapter);
         fixLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_fixlighter));
 
-        mobileLighterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.mobileLighterAdrAndCom));
+        mobileLighterList.setAdapter(mobileLighterAdapter);
         mobileLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_mobilelighter));
 
-        laserLigterList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.laserLighterAdrAndCom));
+        laserLigterList.setAdapter(laserLighterAdapter);
         laserLigterList.setBackgroundColor(getResources().getColor(R.color.listbachground_laserlighter));
 
-        controleList.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Backgrounddownloading.controlePositionAdrAndCom));
+        controleList.setAdapter(controlePositionAdapter);
         controleList.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
-
 
 
         return rootView;
@@ -106,9 +117,26 @@ public class showLighterListFragment extends Fragment {
         super.onStart();
         //start here the async
         new waiting().execute();
+    }
 
+    public static void refreshLists(){
+        tv_aktualisierung.setText(ConvertPDF.getUpdateDate());
+        tv_updateDate_FixLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
+        tv_updateDate_mobileLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
+        tv_updateDate_laserLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
+        tv_updateDate_controlePosition.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
 
+        officialLighterAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray());
+        fixLighterAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, Backgrounddownloading.fixLighterAdrAndCom);
+        mobileLighterAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, Backgrounddownloading.mobileLighterAdrAndCom);
+        laserLighterAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, Backgrounddownloading.laserLighterAdrAndCom);
+        controlePositionAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, Backgrounddownloading.controlePositionAdrAndCom);
 
+        publicLighterlist.setAdapter(officialLighterAdapter);
+        publicLighterlist.setAdapter(fixLighterAdapter);
+        publicLighterlist.setAdapter(mobileLighterAdapter);
+        publicLighterlist.setAdapter(laserLighterAdapter);
+        publicLighterlist.setAdapter(controlePositionAdapter);
     }
 
     @Override
@@ -119,6 +147,15 @@ public class showLighterListFragment extends Fragment {
         setListViewHeightBasedOnItems(mobileLighterList);
         setListViewHeightBasedOnItems(laserLigterList);
         setListViewHeightBasedOnItems(controleList);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i("refresh", "onRefresh called from SwipeRefreshLayout");
+                refreshing = swipeRefreshLayout.isRefreshing();
+                initiateRefresh();
+            }
+        });
     }
 
     public static boolean setListViewHeightBasedOnItems(ListView listView) {
@@ -156,7 +193,18 @@ public class showLighterListFragment extends Fragment {
 
     }
 
+    /**
+     * By abstracting the refresh process to a single method, the app allows both the
+     * SwipeGestureLayout onRefresh() method and the Refresh action item to refresh the content.
+     */
+    private void initiateRefresh() {
+        Log.i("refresh", "initiateRefresh");
 
+        /**
+         * Execute the background task, which uses {@link android.os.AsyncTask} to load the data.
+         */
+        new Backgrounddownloading.backgroundjsondownload().execute();
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -219,7 +267,6 @@ public class showLighterListFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             pDialog.dismiss();
-            Log.d("refresh", "jetzt sollte das refreshing anfangen");
             publicLighterlist.invalidateViews();
             fixLighterList.invalidateViews();
             mobileLighterList.invalidateViews();
@@ -229,6 +276,7 @@ public class showLighterListFragment extends Fragment {
         }
 
     }
+
 
 }
 

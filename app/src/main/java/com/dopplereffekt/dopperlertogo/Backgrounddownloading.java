@@ -1,25 +1,19 @@
 package com.dopplereffekt.dopperlertogo;
-import android.app.ProgressDialog;
+import android.app.Fragment;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.TextView;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -31,12 +25,12 @@ import java.util.TimerTask;
  */
 public class Backgrounddownloading extends Service {
 
-
     public static String updateTimeStamp = "wurde noch nicht übermittelt";
     public static String downloadwebsite = "http://stuxnet.bplaced.net/readfromdatabase.php?databasename=";
-    List<android.location.Address> addresses;
-    String[] lighterOptions = {"fixLighter", "radarfallen", "laserLighter", "controlePosition"};
+    public static List<android.location.Address> addresses;
+    public static String[] lighterOptions = {"fixLighter", "radarfallen", "laserLighter", "controlePosition"};
     public static boolean readable = false;
+    public static Context context;
 
     public static List fixLighterAdresse;
     public static List fixLighterAdrAndCom;
@@ -63,11 +57,11 @@ public class Backgrounddownloading extends Service {
     public static List officialLighterLng;
     public static List officialLighterLat;
 
+
     @Override
     public void onCreate() {
 
-        Log.d("thread", "im theread eingestiegen.");
-
+        context = getApplicationContext();
         fixLighterAdrAndCom  = new ArrayList();
         mobileLighterAdrAndCom  = new ArrayList();
         laserLighterAdrAndCom  = new ArrayList();
@@ -99,7 +93,6 @@ public class Backgrounddownloading extends Service {
 
         clearAllLists();
 
-        new backgroundjsondownload().execute();
         Log.d("Backgrounddownloading", "onCreate");
 
         int delay = 0; // delay for 0 sec.
@@ -136,7 +129,7 @@ public class Backgrounddownloading extends Service {
         officialLighterLng.clear();
     }
 
-    public void clearExpliciteList(String listName){
+    public static void clearExpliciteList(String listName){
         switch (listName)
         {
             case "officialLighter":
@@ -194,7 +187,7 @@ public class Backgrounddownloading extends Service {
     /**
      * �ber die innere Klasse kann ich nicht viel sagen. Sie wird ben�tigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgef�hrt.
      */
-    private class backgroundjsondownload extends AsyncTask<String, Void, Void> {
+    public static class backgroundjsondownload extends AsyncTask<String, Void, Void> {
         @Override
         protected void onPreExecute() {
 
@@ -209,6 +202,8 @@ public class Backgrounddownloading extends Service {
             String comment = "";
             double lat;
             double lng;
+
+                Log.i("refesh", "in der doinBackground weil aufgefordert");
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
             updateTimeStamp = sdf.format(new Date());
@@ -229,7 +224,7 @@ public class Backgrounddownloading extends Service {
                             comment = helpingObject.getString("comment");
 
 
-                            Geocoder geo = new Geocoder(getApplicationContext(), Locale.getDefault());
+                            Geocoder geo = new Geocoder(context, Locale.getDefault());
                             addresses = geo.getFromLocation(lat, lng, 1);
 
                             Log.d("listcheck", "es wird was in die liste geschrieben mit dem switch : " + lighterOptions[i]);
@@ -441,6 +436,14 @@ public class Backgrounddownloading extends Service {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+
+            Log.d("refreshing", showLighterListFragment.refreshing + "");
+
+            if(showLighterListFragment.refreshing) {
+                showLighterListFragment.swipeRefreshLayout.setRefreshing(false);
+                showLighterListFragment.refreshing = showLighterListFragment.swipeRefreshLayout.isRefreshing();
+                showLighterListFragment.refreshLists();
+            }
 
         }
 
