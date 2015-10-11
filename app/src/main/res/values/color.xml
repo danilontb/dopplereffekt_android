@@ -5,12 +5,12 @@
     <color name="counter_text_bg">#000000</color>
     <color name="list_background_pressed">#aeff00</color>
 
-
-    <color name="listbackground_public">#4cab7c</color>
-    <color name="listbachground_fixlighter">#4c89ee</color>
-    <color name="listbachground_mobilelighter">#e26c62</color>
-    <color name="listbachground_laserlighter">#ffc14c</color>
-    <color name="listbachground_controleposition">#4cab7c</color>
-
+    <color name="listbackground_public">#4c89ee</color>
+    <color name="listbackground_fixlighter">#e26c62</color>
+    <color name="listbackground_mobileLighter">#ffc14c</color>
+    <color name="listbackground_laserLighter">#4c89ee</color>
+    <color name="listbackground_controleposition">#4cab7c</color>
+    <color name="listbackground_accident">#e26c62</color>
+    <color name="listbackground_trafficJam">#ffc14c</color>
 
 </resources>

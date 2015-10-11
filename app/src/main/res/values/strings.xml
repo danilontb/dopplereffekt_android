@@ -3,11 +3,12 @@
 
 
     <string-array name="nav_drawer_items">
-        <item>Warnung</item>
+        <item>Warunung</item>
         <item>gemeldete Blitzer</item>
         <item>Blitzer markieren</item>
-        <item>Sonstige Ereignisse</item>
-        <item>Deine Meinung zählt</item>
+        <item>Bussenrechner CH</item>
+        <item>Deine Meinung</item>
+        <item>Warum Dopplereffekt</item>
         <item>About us</item>
     </string-array>
 
@@ -63,4 +64,7 @@
 
     <string name="turn_your_gps_on_text">GPS ist ausgeschaltet. Um präzise Meldungen über Blitzer zu erhalten, muss das GPS eingeschaltet sein.</string>
     <string name="gps_is_turning_off">Sie erhalten keine weiteren Liveupdates</string>
+
+    <string name="doNotUseYourPhoneWhenYouDrive">Wir möchten Sie darauf hinweisen, dass in der Scheweiz das Bedienen eines Mobiltelefons, während der Fahrt, nicht erlaubt ist. Ein Verstoss würde strafrechtliche
+    Konstequenzen mit sich ziehen.</string>
 </resources>

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 
 /**
@@ -50,6 +54,7 @@ public class showLighterListFragment extends Fragment{
     public static ArrayAdapter controlePositionAdapter;
 
     public static Activity activity;
+
 
 
     @Override
@@ -97,16 +102,16 @@ public class showLighterListFragment extends Fragment{
         publicLighterlist.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
 
         fixLighterList.setAdapter(fixLighterAdapter);
-        fixLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_fixlighter));
+        fixLighterList.setBackgroundColor(getResources().getColor(R.color.listbackground_fixlighter));
 
         mobileLighterList.setAdapter(mobileLighterAdapter);
-        mobileLighterList.setBackgroundColor(getResources().getColor(R.color.listbachground_mobilelighter));
+        mobileLighterList.setBackgroundColor(getResources().getColor(R.color.listbackground_mobileLighter));
 
         laserLigterList.setAdapter(laserLighterAdapter);
-        laserLigterList.setBackgroundColor(getResources().getColor(R.color.listbachground_laserlighter));
+        laserLigterList.setBackgroundColor(getResources().getColor(R.color.listbackground_laserLighter));
 
         controleList.setAdapter(controlePositionAdapter);
-        controleList.setBackgroundColor(getResources().getColor(R.color.listbackground_public));
+        controleList.setBackgroundColor(getResources().getColor(R.color.listbackground_controleposition));
 
 
         return rootView;
@@ -119,24 +124,10 @@ public class showLighterListFragment extends Fragment{
         new waiting().execute();
     }
 
+
     public static void refreshLists(){
-        tv_aktualisierung.setText(ConvertPDF.getUpdateDate());
-        tv_updateDate_FixLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
-        tv_updateDate_mobileLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
-        tv_updateDate_laserLighter.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
-        tv_updateDate_controlePosition.setText(" update am : " + Backgrounddownloading.updateTimeStamp);
 
-        officialLighterAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, ConvertPDF.pdf2AdressArray());
-        fixLighterAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, Backgrounddownloading.fixLighterAdrAndCom);
-        mobileLighterAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, Backgrounddownloading.mobileLighterAdrAndCom);
-        laserLighterAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, Backgrounddownloading.laserLighterAdrAndCom);
-        controlePositionAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, Backgrounddownloading.controlePositionAdrAndCom);
 
-        publicLighterlist.setAdapter(officialLighterAdapter);
-        publicLighterlist.setAdapter(fixLighterAdapter);
-        publicLighterlist.setAdapter(mobileLighterAdapter);
-        publicLighterlist.setAdapter(laserLighterAdapter);
-        publicLighterlist.setAdapter(controlePositionAdapter);
     }
 
     @Override
@@ -236,6 +227,7 @@ public class showLighterListFragment extends Fragment{
     }
 
 
+
     /**
      * �ber die innere Klasse kann ich nicht viel sagen. Sie wird ben�tigt um Inhalte aus dem Web zu downloaden. Diese Klasse wird paralell ausgef�hrt.
      */
@@ -249,7 +241,7 @@ public class showLighterListFragment extends Fragment{
             pDialog.setMessage("Daten werden heruntergeladen.");
             pDialog.setProgressStyle(R.style.AppTheme);
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
+            pDialog.setCancelable(false);
             pDialog.show();
         }
 
