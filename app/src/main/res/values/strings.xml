@@ -67,4 +67,9 @@
 
     <string name="doNotUseYourPhoneWhenYouDrive">Wir möchten Sie darauf hinweisen, dass in der Scheweiz das Bedienen eines Mobiltelefons, während der Fahrt, nicht erlaubt ist. Ein Verstoss würde strafrechtliche
     Konstequenzen mit sich ziehen.</string>
+
+      <string name="aboutUsString">Wir sind ein kleines Entwicklerteam, welches sich sehr über Feedback erfreut. Natürlich versuchen wir eure Anregungen und Verbesserungsvorschläge umzusetzen.</string>
+
+     <string name="whydopplerstring">Der Dopplereffekt ist die physikalische Grundlage eines Radargerätes. Das zumessende Fahrzeug wird mit einer elektromagnetischen Welle "beschossen". Durch die Geschwindigkeit
+         des zu messenden Fahrzeugs, wird die zurückfallende Welle gestaucht bzw. gedehnt --> ihre Wellenlänge verändert sich --> aus der Änderung, kann die Geschwindigkeit ermittelt werden.  .</string>
 </resources>
